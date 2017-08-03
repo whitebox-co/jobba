@@ -4,7 +4,7 @@
   "description": "Jobba the Hub",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc && chmod +x ./dist/bin/*",
+    "build": "tsc && chmod -f +x ./dist/bin/*",
     "lint": "tslint . || exit 0",
     "start": "npm run build && ./dist/bin/jobba.js",
     "test": "echo \"Error: no test specified\" && exit 1",

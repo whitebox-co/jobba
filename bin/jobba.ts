@@ -1,5 +1,5 @@
 #!/usr/bin/env node
 
-const Jobba = require('../lib/jobba');
+import Jobba from '../lib/jobba';
 
-new Jobba().start();
+new Jobba({ port: 3000 }).start();

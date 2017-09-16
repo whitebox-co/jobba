@@ -6,20 +6,19 @@
   "scripts": {
     "build": "tsc && chmod -f +x ./dist/bin/*",
     "lint": "tslint . || exit 0",
-    "start": "npm run build && ./dist/bin/jobba.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "watch": "nodemon --exec 'npm run start' --watch lib --watch bin --watch src"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [ "job", "hub" ],
+  "keywords": [
+    "job",
+    "hub"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {},
   "devDependencies": {
-    "@types/node": "^8.0.19",
-    "eslint": "^4.3.0",
-    "eslint-config-zipscene": "^0.2.3",
-    "nodemon": "^1.11.0",
-    "tslint": "^5.5.0",
-    "typescript": "^2.4.2"
+    "@types/node": "^8.0.28",
+    "nodemon": "^1.12.1",
+    "tslint": "^5.7.0",
+    "typescript": "^2.5.2"
   }
 }

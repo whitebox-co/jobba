@@ -20,4 +20,11 @@ export default class Jobba {
 	schedule(id: string, data: any, options?: Bull.JobOptions) {
 		this.queues.get(id).add(data, options);
 	}
+
+	get(id) { return this.queues.get(id); }
+
+	async close(id) {
+		await this.get(id).close();
+	}
+	async closeAll() { for (const [ id, queue ] of this.queues) await this.close(id); }
 }

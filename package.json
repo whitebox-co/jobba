@@ -5,8 +5,10 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc && chmod -f +x ./dist/bin/*",
+    "clean": "rm -rf ./dist",
     "lint": "tslint . || exit 0",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": "tsc -w"
   },
   "keywords": [
     "job",
@@ -14,11 +16,14 @@
   ],
   "author": "",
   "license": "ISC",
-  "dependencies": {},
+  "dependencies": {
+    "bull": "^3.3.1"
+  },
   "devDependencies": {
-    "@types/node": "^8.0.28",
+    "@types/bull": "^3.0.1",
+    "@types/node": "^8.0.34",
     "nodemon": "^1.12.1",
     "tslint": "^5.7.0",
-    "typescript": "^2.5.2"
+    "typescript": "^2.5.3"
   }
 }

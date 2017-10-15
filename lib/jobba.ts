@@ -2,6 +2,8 @@ import * as Bull from 'bull';
 
 interface JobbaConfig {}
 
+type JobHandler = (job: Bull.Job) => Promise<any>;
+
 export default class Jobba {
 	config: JobbaConfig;
 	queues: Map<string, Bull.Queue>;
@@ -11,7 +13,7 @@ export default class Jobba {
 		this.queues = new Map();
 	}
 
-	register(id: string, fn: (job: Bull.Job) => Promise<any>, options?: Bull.QueueOptions) {
+	register(id: string, fn: JobHandler, options?: Bull.QueueOptions) {
 		const queue = new Bull(id, options);
 		this.queues.set(id, queue);
 		queue.process(fn);

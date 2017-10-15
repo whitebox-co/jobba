@@ -25,6 +25,21 @@ export default class Jobba {
 
 	get(id) { return this.queues.get(id); }
 
+	async pause(id) {
+		await this.get(id).pause();
+	}
+	async pauseAll() { for (const [ id, queue ] of this.queues) await this.pause(id); }
+
+	async resume(id) {
+		await this.get(id).resume();
+	}
+	async resumeAll() { for (const [ id, queue ] of this.queues) await this.resume(id); }
+
+	async empty(id) {
+		await this.get(id).empty();
+	}
+	async emptyAll() { for (const [ id, queue ] of this.queues) await this.empty(id); }
+
 	async close(id) {
 		await this.get(id).close();
 	}

@@ -17,6 +17,7 @@ export default class Jobba {
 		const queue = new Bull(id, options);
 		this.queues.set(id, queue);
 		queue.process(fn);
+		return queue;
 	}
 
 	schedule(id: string, data: any, options?: Bull.JobOptions) {
@@ -25,23 +26,23 @@ export default class Jobba {
 
 	get(id) { return this.queues.get(id); }
 
-	async pause(id) {
-		await this.get(id).pause();
+	pause(id) {
+		return this.get(id).pause();
 	}
 	async pauseAll() { for (const [ id, queue ] of this.queues) await this.pause(id); }
 
-	async resume(id) {
-		await this.get(id).resume();
+	resume(id) {
+		return this.get(id).resume();
 	}
 	async resumeAll() { for (const [ id, queue ] of this.queues) await this.resume(id); }
 
-	async empty(id) {
-		await this.get(id).empty();
+	empty(id) {
+		return this.get(id).empty();
 	}
 	async emptyAll() { for (const [ id, queue ] of this.queues) await this.empty(id); }
 
-	async close(id) {
-		await this.get(id).close();
+	close(id) {
+		return this.get(id).close();
 	}
 	async closeAll() { for (const [ id, queue ] of this.queues) await this.close(id); }
 }

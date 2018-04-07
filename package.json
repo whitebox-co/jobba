@@ -4,26 +4,26 @@
   "description": "Jobba the Hub",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc && chmod -f +x ./dist/bin/*",
+    "build": "tsc && [ -d ./dist/bin ] && chmod -f +x ./dist/bin/*",
     "clean": "rm -rf ./dist",
-    "lint": "tslint . || exit 0",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "tslint -t stylish './src/**/*.ts' || exit 0",
+    "lint:verbose": "tslint -t codeFrame './src/**/*.ts' || exit 0",
     "watch": "tsc -w"
   },
   "keywords": [
     "job",
     "hub"
   ],
-  "author": "",
+  "author": "Ross Hadden",
   "license": "ISC",
   "dependencies": {
-    "bull": "^3.3.1"
+    "@types/bull": "^3.3.10",
+    "@types/node": "^8.10.3",
+    "bull": "^3.3.10",
+    "typescript": "^2.8.1"
   },
   "devDependencies": {
-    "@types/bull": "^3.0.1",
-    "@types/node": "^8.0.34",
-    "nodemon": "^1.12.1",
-    "tslint": "^5.7.0",
-    "typescript": "^2.5.3"
+    "nodemon": "^1.17.3",
+    "tslint": "^5.9.1"
   }
 }

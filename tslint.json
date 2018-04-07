@@ -5,6 +5,7 @@
 		"forin": false,
 		"indent": [ true, "tabs", 2 ],
 		"interface-name": false,
+		"max-classes-per-file": false,
 		"member-access": false,
 		"no-console": false,
 		"no-empty": false,

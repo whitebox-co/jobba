@@ -1,26 +1,28 @@
-import * as Bull from 'bull';
+import * as Queue from 'bull';
 
 interface JobbaConfig {}
 
-type JobHandler = (job: Bull.Job) => Promise<any>;
+type JobHandler = (job: Queue.Job) => Promise<any>;
 
 export default class Jobba {
 	config: JobbaConfig;
-	queues: Map<string, Bull.Queue>;
+	queues: Map<string, Queue.Queue>;
 
 	constructor(config) {
 		this.config = config;
 		this.queues = new Map();
 	}
 
-	register(id: string, fn: JobHandler, options?: Bull.QueueOptions) {
-		const queue = new Bull(id, options);
+	register(id: string, fn: JobHandler, options?: Queue.QueueOptions) {
+		if (this.queues.has(id)) throw new Error('Job already registered.');
+
+		const queue = new Queue(id, options);
 		this.queues.set(id, queue);
 		queue.process(fn);
 		return queue;
 	}
 
-	schedule(id: string, data: any, options?: Bull.JobOptions) {
+	schedule(id: string, data: any, options?: Queue.JobOptions) {
 		this.queues.get(id).add(data, options);
 	}
 

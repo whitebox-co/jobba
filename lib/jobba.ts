@@ -4,11 +4,17 @@ interface JobbaConfig {}
 
 type JobHandler = (job: Queue.Job) => Promise<any>;
 
+export interface Task {
+	id: string;
+	handler: JobHandler;
+	options?: Queue.QueueOptions;
+}
+
 export default class Jobba {
 	config: JobbaConfig;
 	queues: Map<string, Queue.Queue>;
 
-	constructor(config) {
+	constructor(config = {}) {
 		this.config = config;
 		this.queues = new Map();
 	}

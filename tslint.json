@@ -1,6 +1,7 @@
 {
 	"extends": "tslint:recommended",
 	"rules": {
+		"array-type": false,
 		"curly": false,
 		"forin": false,
 		"indent": [ true, "tabs", 2 ],

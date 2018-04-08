@@ -8,6 +8,7 @@
     "clean": "rm -rf ./dist",
     "lint": "tslint -t stylish './src/**/*.ts' || exit 0",
     "lint:verbose": "tslint -t codeFrame './src/**/*.ts' || exit 0",
+    "start": "npm run build && node ./dist/bin/server.js",
     "watch": "tsc -w"
   },
   "keywords": [
@@ -20,6 +21,9 @@
     "@types/bull": "^3.3.10",
     "@types/node": "^8.10.3",
     "bull": "^3.3.10",
+    "koa": "^2.5.0",
+    "koa-bodyparser": "^4.2.0",
+    "koa-router": "^7.4.0",
     "typescript": "^2.8.1"
   },
   "devDependencies": {

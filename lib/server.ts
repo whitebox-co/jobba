@@ -2,7 +2,7 @@ import * as Koa from 'koa';
 import * as KoaRouter from 'koa-router';
 import * as Queue from 'bull';
 import * as koaBody from 'koa-bodyparser';
-import { Task } from '../lib/jobba';
+import Jobba from '../lib/jobba';
 
 export enum Method {
 	Get = 'get',
@@ -23,11 +23,13 @@ export default class Server {
 	app: Koa;
 	router: KoaRouter;
 	port: number;
+	jobba: Jobba;
 
 	constructor(routes: Array<Route>) {
 		this.app = new Koa();
 		this.router = new KoaRouter();
 		this.port = 3000;
+		this.jobba = new Jobba();
 
 		this.init(routes);
 	}
@@ -41,6 +43,11 @@ export default class Server {
 		this.routes(routes);
 
 		this.app.use(koaBody());
+		this.app.use((ctx, next) => {
+			ctx.server = this;
+			ctx.jobba = this.jobba;
+			next();
+		});
 		this.app.use(this.router.routes());
 		this.app.use(this.router.allowedMethods());
 	}

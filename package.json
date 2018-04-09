@@ -6,6 +6,7 @@
   "scripts": {
     "build": "tsc && [ -d ./dist/bin ] && chmod -f +x ./dist/bin/*",
     "clean": "rm -rf ./dist",
+    "debug": "npm run build && node --inspect ./dist/bin/server.js",
     "lint": "tslint -t stylish './src/**/*.ts' || exit 0",
     "lint:verbose": "tslint -t codeFrame './src/**/*.ts' || exit 0",
     "start": "npm run build && node ./dist/bin/server.js",

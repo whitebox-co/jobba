@@ -14,7 +14,8 @@ export default [
 		method: Method.Post,
 		handler: (ctx) => {
 			const { data, options } = ctx.request.body;
-			ctx.body = ctx.jobba.schedule(ctx.params.id, data, options);
+			ctx.jobba.schedule(ctx.params.id, data, options);
+			ctx.body = true;
 		}
 	},
 ];

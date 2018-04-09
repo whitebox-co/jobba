@@ -19,7 +19,7 @@ export default class Jobba {
 		this.queues = new Map();
 	}
 
-	register(id: string, fn: JobHandler, options?: Queue.QueueOptions) {
+	public register(id: string, fn: JobHandler, options?: Queue.QueueOptions) {
 		if (this.queues.has(id)) throw new Error('Job already registered.');
 
 		const queue = new Queue(id, options);
@@ -28,29 +28,29 @@ export default class Jobba {
 		return queue;
 	}
 
-	schedule(id: string, data: any, options?: Queue.JobOptions) {
+	public schedule(id: string, data: any, options?: Queue.JobOptions) {
 		this.queues.get(id).add(data, options);
 	}
 
-	get(id) { return this.queues.get(id); }
-
-	pause(id) {
+	public pause(id) {
 		return this.get(id).pause();
 	}
 	async pauseAll() { for (const [ id, queue ] of this.queues) await this.pause(id); }
 
-	resume(id) {
+	public resume(id) {
 		return this.get(id).resume();
 	}
 	async resumeAll() { for (const [ id, queue ] of this.queues) await this.resume(id); }
 
-	empty(id) {
+	public empty(id) {
 		return this.get(id).empty();
 	}
-	async emptyAll() { for (const [ id, queue ] of this.queues) await this.empty(id); }
+	public async emptyAll() { for (const [ id, queue ] of this.queues) await this.empty(id); }
 
-	close(id) {
+	public close(id) {
 		return this.get(id).close();
 	}
-	async closeAll() { for (const [ id, queue ] of this.queues) await this.close(id); }
+	public async closeAll() { for (const [ id, queue ] of this.queues) await this.close(id); }
+
+	protected get(id) { return this.queues.get(id); }
 }

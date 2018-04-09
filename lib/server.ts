@@ -35,10 +35,12 @@ export default class Server {
 	}
 
 	public start() {
+		console.log('Listening on port:', this.port);
 		this.app.listen(this.port);
 	}
 
 	private init(routes: Array<Route>, tasks: Array<Task>) {
+		console.log('Initializing server...');
 		this.routes(routes);
 		this.tasks(tasks);
 
@@ -53,12 +55,14 @@ export default class Server {
 	}
 
 	private routes(routes: Array<Route>) {
+		console.log('Registering routes...');
 		for (const route of routes) {
 			this.router[route.method](route.path, route.handler);
 		}
 	}
 
 	private tasks(tasks: Array<Task>) {
+		console.log('Registering tasks...');
 		for (const task of tasks) {
 			this.jobba.register(task.id, task.handler, task.options);
 		}

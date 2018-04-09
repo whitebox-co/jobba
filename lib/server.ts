@@ -5,12 +5,13 @@ import * as koaBody from 'koa-bodyparser';
 import Jobba, { Task } from '../lib/jobba';
 
 export enum Method {
-	Get = 'get',
-	Put = 'put',
-	Post = 'post',
-	Patch = 'patch',
-	Delete = 'delete',
+	All = 'all',
 	Del = 'del',
+	Delete = 'delete',
+	Get = 'get',
+	Patch = 'patch',
+	Post = 'post',
+	Put = 'put',
 }
 
 export interface Route {
@@ -45,10 +46,10 @@ export default class Server {
 		this.tasks(tasks);
 
 		this.app.use(koaBody());
-		this.app.use((ctx, next) => {
+		this.app.use(async (ctx, next) => {
 			ctx.server = this;
 			ctx.jobba = this.jobba;
-			next();
+			await next();
 		});
 		this.app.use(this.router.routes());
 		this.app.use(this.router.allowedMethods());

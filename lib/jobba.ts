@@ -29,7 +29,7 @@ export default class Jobba {
 	}
 
 	public schedule(id: string, data: any, options?: Queue.JobOptions) {
-		this.queues.get(id).add(data, options);
+		return this.queues.get(id).add(data, options);
 	}
 
 	public pause(id) {
@@ -42,6 +42,10 @@ export default class Jobba {
 	}
 	async resumeAll() { for (const [ id, queue ] of this.queues) await this.resume(id); }
 
+	public count(id) {
+		return this.get(id).count();
+	}
+
 	public empty(id) {
 		return this.get(id).empty();
 	}
@@ -51,6 +55,10 @@ export default class Jobba {
 		return this.get(id).close();
 	}
 	public async closeAll() { for (const [ id, queue ] of this.queues) await this.close(id); }
+
+	public getJob(id, jobId) {
+		return this.get(id).getJob(jobId);
+	}
 
 	protected get(id) { return this.queues.get(id); }
 }

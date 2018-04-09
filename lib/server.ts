@@ -17,7 +17,7 @@ export enum Method {
 export interface Route {
 	path: string;
 	method: Method;
-	handler: (ctx: Koa.Context) => any;
+	handler: (ctx: Koa.Context, next?: () => void) => any;
 }
 
 export default class Server {
@@ -46,10 +46,10 @@ export default class Server {
 		this.tasks(tasks);
 
 		this.app.use(koaBody());
-		this.app.use(async (ctx, next) => {
+		this.app.use((ctx, next) => {
 			ctx.server = this;
 			ctx.jobba = this.jobba;
-			await next();
+			return next();
 		});
 		this.app.use(this.router.routes());
 		this.app.use(this.router.allowedMethods());

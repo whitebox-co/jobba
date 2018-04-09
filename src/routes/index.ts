@@ -8,6 +8,21 @@ export default [
 			ctx.body = { time: new Date() };
 		}
 	}, {
+		path: '/queue/:id/*',
+		method: Method.All,
+		handler: (ctx, next) => {
+			ctx.queue = ctx.jobba.get('foo');
+			return next();
+		}
+	}, {
+		path: '/queue/:id',
+		method: Method.Get,
+		handler: async (ctx) => {
+			const queue = ctx.jobba.get('foo');
+			console.log(ctx.queue);
+			ctx.body = true;
+		}
+	}, {
 		path: '/queue/:id/add',
 		method: Method.Post,
 		handler: async (ctx) => {
@@ -46,9 +61,18 @@ export default [
 		}
 	}, {
 		path: '/queue/:id/getJob',
-		method: Method.Post,
+		method: Method.Get,
 		handler: async (ctx) => {
-			ctx.body = await ctx.jobba.getJob(ctx.params.id, ctx.request.body.jobId);
+			const { jobId } = ctx.request.query;
+			ctx.body = await ctx.jobba.getJob(ctx.params.id, jobId);
+		}
+	}, {
+		path: '/queue/:id/getJobs',
+		method: Method.Get,
+		handler: async (ctx) => {
+			const { types, start, end, asc } = ctx.request.query;
+			console.log(ctx.queue);
+			ctx.body = await ctx.jobba.get(ctx.params.id).getJobs(types, start, end, asc);
 		}
 	},
 ];

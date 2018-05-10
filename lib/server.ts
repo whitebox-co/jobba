@@ -65,7 +65,7 @@ export default class Server {
 	private tasks(tasks: Array<Task>) {
 		console.log('Registering tasks...');
 		for (const task of tasks) {
-			this.jobba.register(task.id, task.handler, task.options);
+			this.jobba.register(task);
 		}
 	}
 }

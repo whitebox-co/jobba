@@ -19,12 +19,12 @@ export default class Jobba {
 		this.queues = new Map();
 	}
 
-	public register(id: string, fn: JobHandler, options?: Queue.QueueOptions) {
-		if (this.queues.has(id)) throw new Error('Job already registered.');
+	public register(task: Task) {
+		if (this.queues.has(task.id)) throw new Error('Job already registered.');
 
-		const queue = new Queue(id, options);
-		this.queues.set(id, queue);
-		queue.process(fn);
+		const queue = new Queue(task.id, task.options);
+		this.queues.set(task.id, queue);
+		queue.process(task.handler);
 		return queue;
 	}
 

@@ -2,12 +2,10 @@ import * as Queue from 'bull';
 
 interface JobbaConfig {}
 
-type JobHandler = (job: Queue.Job) => Promise<any>;
+type JobHandler = (job: Queue.Job) => Promise<any> | void;
 
-export interface Task {
-	id: string;
-	handler: JobHandler;
-	options?: Queue.QueueOptions;
+export class Task {
+	constructor(public id: string, public handler: JobHandler, public options?: Queue.QueueOptions) {}
 }
 
 export default class Jobba {

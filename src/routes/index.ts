@@ -28,7 +28,7 @@ export default [
 			return next();
 		}
 	}, {
-		path: '/queues/:id/add',
+		path: '/queues/:id/schedule',
 		method: Method.Post,
 		handler: async (ctx) => {
 			const { data, options } = ctx.request.body;

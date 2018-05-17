@@ -11,8 +11,8 @@ export interface Task {
 }
 
 export default class Jobba {
-	config: JobbaConfig;
-	queues: Map<string, Queue.Queue>;
+	private config: JobbaConfig;
+	private queues: Map<string, Queue.Queue>;
 
 	constructor(config = {}) {
 		this.config = config;
@@ -60,5 +60,7 @@ export default class Jobba {
 		return this.get(id).getJob(jobId);
 	}
 
-	protected get(id) { return this.queues.get(id); }
+	public get(id) { return this.queues.get(id); }
+
+	public list() { return Array.from(this.queues.keys()); }
 }

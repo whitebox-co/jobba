@@ -4,6 +4,7 @@ export default [
 	{
 		path: '/',
 		method: Method.Get,
+		description: 'Status check.',
 		handler: (ctx) => {
 			ctx.body = { time: new Date() };
 		}

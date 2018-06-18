@@ -1,17 +1,20 @@
 import * as Koa from 'koa';
 
 export enum Method {
-	All = 'all',
-	Del = 'del',
-	Delete = 'delete',
-	Get = 'get',
-	Patch = 'patch',
-	Post = 'post',
-	Put = 'put',
+	All = 'ALL',
+	Del = 'DEL',
+	Delete = 'DELETE',
+	Get = 'GET',
+	Patch = 'PATCH',
+	Post = 'POST',
+	Put = 'PUT',
 }
+
+export type Handler = (ctx: Koa.Context, next?: () => void) => any;
 
 export interface Route {
 	path: string;
 	method: Method;
-	handler: (ctx: Koa.Context, next?: () => void) => any;
+	description?: string;
+	handler: Handler;
 }

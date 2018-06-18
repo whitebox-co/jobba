@@ -4,9 +4,7 @@ import * as Queue from 'bull';
 import * as koaBody from 'koa-bodyparser';
 import Jobba, { Task } from './jobba';
 import routes from './routes';
-import { Method, Route } from './utils';
-
-type Endpoint = (ctx: Koa.Context, next?: () => void) => any;
+import { Handler, Method, Route } from './utils';
 
 export default class Server {
 	app: Koa;
@@ -23,8 +21,13 @@ export default class Server {
 		this.init(tasks);
 	}
 
-	public register(method: Method, path: string, fn: Endpoint) {
-		this.router[method](path, fn);
+	public register(route: Route | string, method: Method = Method.Get, handler: Handler = () => {}) {
+		if (typeof route !== 'string') {
+			handler = route.handler;
+			method = route.method;
+			route = route.path;
+		}
+		this.router[method.toLowerCase()](route, handler);
 	}
 
 	public start() {
@@ -49,9 +52,12 @@ export default class Server {
 
 	private initRoutes(routes: Array<Route>) {
 		console.log('Registering routes...');
-		for (const route of routes) {
-			this.router[route.method](route.path, route.handler);
-		}
+
+		for (const route of routes) this.register(route);
+
+		this.register('/routes', Method.Get, (ctx) => {
+			ctx.body = routes;
+		});
 	}
 
 	private initTasks(tasks: Array<Task>) {

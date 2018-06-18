@@ -2,7 +2,7 @@ import * as Koa from 'koa';
 import * as KoaRouter from 'koa-router';
 import * as Queue from 'bull';
 import * as koaBody from 'koa-bodyparser';
-import Jobba, { Task } from '../lib/jobba';
+import Jobba, { Task } from './jobba';
 
 export enum Method {
 	All = 'all',

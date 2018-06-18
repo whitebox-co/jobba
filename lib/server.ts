@@ -3,22 +3,10 @@ import * as KoaRouter from 'koa-router';
 import * as Queue from 'bull';
 import * as koaBody from 'koa-bodyparser';
 import Jobba, { Task } from './jobba';
+import routes from './routes';
+import { Method, Route } from './utils';
 
-export enum Method {
-	All = 'all',
-	Del = 'del',
-	Delete = 'delete',
-	Get = 'get',
-	Patch = 'patch',
-	Post = 'post',
-	Put = 'put',
-}
-
-export interface Route {
-	path: string;
-	method: Method;
-	handler: (ctx: Koa.Context, next?: () => void) => any;
-}
+type Endpoint = (ctx: Koa.Context, next?: () => void) => any;
 
 export default class Server {
 	app: Koa;
@@ -26,13 +14,17 @@ export default class Server {
 	port: number;
 	jobba: Jobba;
 
-	constructor(routes: Array<Route>, tasks: Array<Task>) {
+	constructor(tasks: Array<Task>) {
 		this.app = new Koa();
 		this.router = new KoaRouter();
 		this.port = 3000;
 		this.jobba = new Jobba();
 
-		this.init(routes, tasks);
+		this.init(tasks);
+	}
+
+	public register(method: Method, path: string, fn: Endpoint) {
+		this.router[method](path, fn);
 	}
 
 	public start() {
@@ -40,10 +32,10 @@ export default class Server {
 		this.app.listen(this.port);
 	}
 
-	private init(routes: Array<Route>, tasks: Array<Task>) {
+	private init(tasks: Array<Task>) {
 		console.log('Initializing server...');
-		this.routes(routes);
-		this.tasks(tasks);
+		this.initRoutes(routes);
+		this.initTasks(tasks);
 
 		this.app.use(koaBody());
 		this.app.use((ctx, next) => {
@@ -55,14 +47,14 @@ export default class Server {
 		this.app.use(this.router.allowedMethods());
 	}
 
-	private routes(routes: Array<Route>) {
+	private initRoutes(routes: Array<Route>) {
 		console.log('Registering routes...');
 		for (const route of routes) {
 			this.router[route.method](route.path, route.handler);
 		}
 	}
 
-	private tasks(tasks: Array<Task>) {
+	private initTasks(tasks: Array<Task>) {
 		console.log('Registering tasks...');
 		for (const task of tasks) {
 			this.jobba.register(task);

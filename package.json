@@ -17,7 +17,7 @@
   "author": "Ross Hadden",
   "license": "ISC",
   "dependencies": {
-    "bull": "^3.3.10",
+    "bull": "^3.4.2",
     "koa": "^2.5.0",
     "koa-bodyparser": "^4.2.0",
     "koa-router": "^7.4.0"

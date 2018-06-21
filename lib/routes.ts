@@ -10,7 +10,7 @@ export default [
 		}
 	}, {
 		path: '/queues',
-		method: Method.All,
+		method: Method.Get,
 		handler: (ctx) => {
 			ctx.body = ctx.jobba.list();
 		}
@@ -24,6 +24,7 @@ export default [
 	}, {
 		path: '/queues/:id/*',
 		method: Method.All,
+		private: true,
 		handler: (ctx, next) => {
 			ctx.queue = ctx.jobba.get(ctx.params.id);
 			return next();

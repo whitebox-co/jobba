@@ -56,7 +56,7 @@ export default class Server {
 		for (const route of routes) this.register(route);
 
 		this.register('/routes', Method.Get, (ctx) => {
-			ctx.body = routes;
+			ctx.body = routes.filter((route) => !route.private);
 		});
 	}
 

@@ -15,6 +15,7 @@ export type Handler = (ctx: Koa.Context, next?: () => void) => any;
 export interface Route {
 	path: string;
 	method: Method;
+	private?: boolean;
 	description?: string;
 	handler: Handler;
 }

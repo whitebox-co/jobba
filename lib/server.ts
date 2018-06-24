@@ -1,7 +1,11 @@
+import * as Arena from 'bull-arena';
 import * as Koa from 'koa';
 import * as KoaRouter from 'koa-router';
 import * as Queue from 'bull';
+import * as express from 'koa-express';
 import * as koaBody from 'koa-bodyparser';
+import * as koaStatic from 'koa-static';
+import * as path from 'path';
 import Jobba, { Task } from './jobba';
 import routes from './routes';
 import { Handler, Method, Route } from './utils';
@@ -14,7 +18,7 @@ export default class Server {
 
 	constructor(tasks: Array<Task>) {
 		this.app = new Koa();
-		this.router = new KoaRouter();
+		this.router = new KoaRouter({ prefix: '/api' });
 		this.port = 3000;
 		this.jobba = new Jobba();
 
@@ -40,7 +44,18 @@ export default class Server {
 		this.initRoutes(routes);
 		this.initTasks(tasks);
 
+		const arena = Arena({
+			queues: [
+				{ name: 'test', hostId: 'Test', },
+			],
+		}, {
+			disableListen: true,
+			useCdn: false,
+		});
+
+		this.app.use(koaStatic(path.join(__dirname, '..', 'node_modules/bull-arena/public')));
 		this.app.use(koaBody());
+
 		this.app.use((ctx, next) => {
 			ctx.server = this;
 			ctx.jobba = this.jobba;
@@ -48,6 +63,7 @@ export default class Server {
 		});
 		this.app.use(this.router.routes());
 		this.app.use(this.router.allowedMethods());
+		this.app.use(express(arena));
 	}
 
 	private initRoutes(routes: Array<Route>) {

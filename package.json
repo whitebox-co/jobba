@@ -18,9 +18,12 @@
   "license": "ISC",
   "dependencies": {
     "bull": "^3.4.2",
+    "bull-arena": "^2.4.5",
     "koa": "^2.5.0",
     "koa-bodyparser": "^4.2.0",
-    "koa-router": "^7.4.0"
+    "koa-express": "^1.1.0",
+    "koa-router": "^7.4.0",
+    "koa-static": "^5.0.0"
   },
   "devDependencies": {
     "@types/bull": "^3.3.12",

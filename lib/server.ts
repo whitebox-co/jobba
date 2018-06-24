@@ -2,6 +2,7 @@ import * as Arena from 'bull-arena';
 import * as Koa from 'koa';
 import * as KoaRouter from 'koa-router';
 import * as Queue from 'bull';
+import * as _ from 'lodash';
 import * as express from 'koa-express';
 import * as koaBody from 'koa-bodyparser';
 import * as koaStatic from 'koa-static';
@@ -15,6 +16,8 @@ export default class Server {
 	router: KoaRouter;
 	port: number;
 	jobba: Jobba;
+
+	tasks: Array<Task>;
 
 	constructor(tasks: Array<Task>) {
 		this.app = new Koa();
@@ -45,9 +48,9 @@ export default class Server {
 		this.initTasks(tasks);
 
 		const arena = Arena({
-			queues: [
-				{ name: 'test', hostId: 'Test', },
-			],
+			queues: this.tasks.map((task) => (
+				{ name: task.id, hostId: task.name }
+			)),
 		}, {
 			disableListen: true,
 			useCdn: false,
@@ -77,8 +80,12 @@ export default class Server {
 	}
 
 	private initTasks(tasks: Array<Task>) {
+		this.tasks = [];
+
 		console.log('Registering tasks...');
 		for (const task of tasks) {
+			task.name = _.capitalize(_.words(task.id).join(' '));
+			this.tasks.push(task);
 			this.jobba.register(task);
 		}
 	}

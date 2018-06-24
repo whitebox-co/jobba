@@ -5,6 +5,7 @@ interface JobbaConfig {}
 type JobHandler = (job: Queue.Job) => Promise<any> | void;
 
 export class Task {
+	public name;
 	constructor(public id: string, public handler: JobHandler, public options?: Queue.QueueOptions) {}
 }
 

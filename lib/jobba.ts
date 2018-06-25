@@ -1,4 +1,5 @@
 import * as Queue from 'bull';
+import * as _ from 'lodash';
 
 interface JobbaConfig {}
 
@@ -6,7 +7,9 @@ type JobHandler = (job: Queue.Job) => Promise<any> | void;
 
 export class Task {
 	public name;
-	constructor(public id: string, public handler: JobHandler, public options?: Queue.QueueOptions) {}
+	constructor(public id: string, public handler: JobHandler, public options?: Queue.QueueOptions) {
+		this.name = _.capitalize(_.words(id).join(' '));
+	}
 }
 
 export default class Jobba {

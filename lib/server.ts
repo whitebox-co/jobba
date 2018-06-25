@@ -2,7 +2,6 @@ import * as Arena from 'bull-arena';
 import * as Koa from 'koa';
 import * as KoaRouter from 'koa-router';
 import * as Queue from 'bull';
-import * as _ from 'lodash';
 import * as express from 'koa-express';
 import * as koaBody from 'koa-bodyparser';
 import * as koaStatic from 'koa-static';
@@ -84,7 +83,6 @@ export default class Server {
 
 		console.log('Registering tasks...');
 		for (const task of tasks) {
-			task.name = _.capitalize(_.words(task.id).join(' '));
 			this.tasks.push(task);
 			this.jobba.register(task);
 		}

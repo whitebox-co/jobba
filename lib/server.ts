@@ -7,7 +7,7 @@ import * as koaBody from 'koa-bodyparser';
 import * as koaStatic from 'koa-static';
 import * as path from 'path';
 import Jobba, { Task } from './jobba';
-import routes from './routes';
+import routes from '../src/routes';
 import { Handler, Method, Route } from './utils';
 
 export default class Server {

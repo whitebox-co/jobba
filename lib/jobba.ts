@@ -7,6 +7,8 @@ type JobHandler = (job: Queue.Job) => Promise<any> | void;
 
 export class Task {
 	public name;
+	public queue: Queue.Queue;
+
 	constructor(public id: string, public handler: JobHandler, public options?: Queue.QueueOptions) {
 		this.name = _.capitalize(_.words(id).join(' '));
 	}
@@ -26,6 +28,7 @@ export default class Jobba {
 
 		const queue = new Queue(task.id, task.options);
 		this.queues.set(task.id, queue);
+		task.queue = queue;
 		queue.process(task.handler);
 		return queue;
 	}

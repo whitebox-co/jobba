@@ -1,9 +1,8 @@
-import Server from '../lib/server';
-import { Method } from '../lib/utils';
+import Server, { Method } from '../lib/server';
 
 export default function(server: Server) {
 	server.register('/', Method.Get, (ctx) => {
-		ctx.body = { time: new Date() };
+		ctx.body = true;
 	}, { description: 'Status check.' });
 
 	server.register('/routes', Method.Get, (ctx) => {

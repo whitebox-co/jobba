@@ -8,14 +8,32 @@ import * as koaStatic from 'koa-static';
 import * as path from 'path';
 import Jobba, { Task } from './jobba';
 import routes from '../src/routes';
-import { Handler, Method, Route } from './utils';
 
-interface Options {
+export enum Method {
+	All = 'ALL',
+	Del = 'DEL',
+	Delete = 'DELETE',
+	Get = 'GET',
+	Patch = 'PATCH',
+	Post = 'POST',
+	Put = 'PUT',
+}
+
+export type Handler = (ctx: Koa.Context, next?: () => void) => any;
+export type Registrar = (server: Server) => any;
+
+export interface Route {
+	path: string;
+	method: Method;
+	private?: boolean;
+	description?: string;
+	handler: Handler;
+}
+
+interface RouteOptions {
 	private?: boolean;
 	description?: string;
 }
-
-export type Registrar = (server: Server) => any;
 
 export default class Server {
 	app: Koa;
@@ -43,7 +61,7 @@ export default class Server {
 		path: Route | string,
 		method: Method = Method.Get,
 		handler: Handler = () => {},
-		options: Options = {}
+		options: RouteOptions = {}
 	) {
 		let route: Route;
 

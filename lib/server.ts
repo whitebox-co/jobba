@@ -35,20 +35,22 @@ interface RouteOptions {
 	description?: string;
 }
 
+export interface Config {
+	port: number;
+}
+
 export default class Server {
 	app: Koa;
 	router: KoaRouter;
-	port: number;
 	jobba: Jobba;
 
 	public routes: Array<Route>;
 
 	private tasks: Array<Task>;
 
-	constructor(tasks: Array<Task>) {
+	constructor(private config: Config, tasks: Array<Task>) {
 		this.app = new Koa();
 		this.router = new KoaRouter({ prefix: '/api' });
-		this.port = 3000;
 		this.jobba = new Jobba();
 
 		this.routes = [];
@@ -84,8 +86,8 @@ export default class Server {
 	}
 
 	public start() {
-		console.log('Listening on port:', this.port);
-		this.app.listen(this.port);
+		console.log('Listening on port:', this.config.port);
+		this.app.listen(this.config.port);
 	}
 
 	private init(registrar: Registrar, tasks: Array<Task>) {

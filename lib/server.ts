@@ -10,13 +10,22 @@ import Jobba, { Task } from './jobba';
 import routes from '../src/routes';
 import { Handler, Method, Route } from './utils';
 
+interface Options {
+	private?: boolean;
+	description?: string;
+}
+
+export type Registrar = (server: Server) => any;
+
 export default class Server {
 	app: Koa;
 	router: KoaRouter;
 	port: number;
 	jobba: Jobba;
 
-	tasks: Array<Task>;
+	public routes: Array<Route>;
+
+	private tasks: Array<Task>;
 
 	constructor(tasks: Array<Task>) {
 		this.app = new Koa();
@@ -24,16 +33,36 @@ export default class Server {
 		this.port = 3000;
 		this.jobba = new Jobba();
 
-		this.init(tasks);
+		this.routes = [];
+		this.tasks = [];
+
+		this.init(routes, tasks);
 	}
 
-	public register(route: Route | string, method: Method = Method.Get, handler: Handler = () => {}) {
-		if (typeof route !== 'string') {
-			handler = route.handler;
-			method = route.method;
-			route = route.path;
+	public register(
+		path: Route | string,
+		method: Method = Method.Get,
+		handler: Handler = () => {},
+		options: Options = {}
+	) {
+		let route: Route;
+
+		if (typeof path === 'string') {
+			route = {
+				path,
+				handler,
+				method,
+				private: options.private,
+				description: options.description,
+			};
 		}
-		this.router[method.toLowerCase()](route, handler);
+
+		handler = route.handler;
+		method = route.method;
+		path = route.path;
+
+		this.routes.push(route);
+		this.router[method.toLowerCase()](path, handler);
 	}
 
 	public start() {
@@ -41,11 +70,19 @@ export default class Server {
 		this.app.listen(this.port);
 	}
 
-	private init(tasks: Array<Task>) {
+	private init(registrar: Registrar, tasks: Array<Task>) {
 		console.log('Initializing server...');
-		this.initRoutes(routes);
-		this.initTasks(tasks);
 
+		console.log('Registering routes...');
+		registrar(this);
+
+		console.log('Registering tasks...');
+		for (const task of tasks) {
+			this.tasks.push(task);
+			this.jobba.register(task);
+		}
+
+		console.log('Registering UI...');
 		const arena = Arena({
 			queues: this.tasks.map((task) => (
 				{ name: task.id, hostId: task.name }
@@ -55,9 +92,9 @@ export default class Server {
 			useCdn: false,
 		});
 
+		console.log('Registering API...');
 		this.app.use(koaStatic(path.join(__dirname, '..', 'node_modules/bull-arena/public')));
 		this.app.use(koaBody());
-
 		this.app.use((ctx, next) => {
 			ctx.server = this;
 			ctx.jobba = this.jobba;
@@ -66,25 +103,5 @@ export default class Server {
 		this.app.use(this.router.routes());
 		this.app.use(this.router.allowedMethods());
 		this.app.use(express(arena));
-	}
-
-	private initRoutes(routes: Array<Route>) {
-		console.log('Registering routes...');
-
-		for (const route of routes) this.register(route);
-
-		this.register('/routes', Method.Get, (ctx) => {
-			ctx.body = routes.filter((route) => !route.private);
-		});
-	}
-
-	private initTasks(tasks: Array<Task>) {
-		this.tasks = [];
-
-		console.log('Registering tasks...');
-		for (const task of tasks) {
-			this.tasks.push(task);
-			this.jobba.register(task);
-		}
 	}
 }

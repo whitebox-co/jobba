@@ -2,7 +2,7 @@
   "name": "jobba",
   "version": "0.0.1",
   "description": "Jobba the Hub",
-  "main": "dist/index.js",
+  "main": "dist/lib/index.js",
   "scripts": {
     "build": "tsc && [ -d ./dist/bin ] && chmod -f +x ./dist/bin/* || exit 0",
     "clean": "rm -rf ./dist",

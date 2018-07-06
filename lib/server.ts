@@ -46,14 +46,15 @@ export default class Server {
 
 	public routes: Array<Route>;
 
-	constructor(private config: Config, tasks: Array<Task>) {
+	constructor(private config: Config, ...registrars: Array<Registrar>) {
 		this.app = new Koa();
 		this.router = new KoaRouter({ prefix: '/api' });
 		this.jobba = new Jobba();
 
 		this.routes = [];
 
-		this.init(routes, tasks);
+		registrars.unshift(routes);
+		this.init(registrars);
 	}
 
 	public register(
@@ -87,20 +88,17 @@ export default class Server {
 		this.app.listen(this.config.port);
 	}
 
-	private init(registrar: Registrar, tasks: Array<Task>) {
+	private init(registrars: Array<Registrar>) {
 		console.log('Initializing server...');
 
-		console.log('Registering routes...');
-		registrar(this);
+		console.log('Initializing registrars...');
+		for (const registrar of registrars) registrar(this);
 
-		console.log('Registering tasks...');
-		for (const task of tasks) {
-			this.jobba.register(task);
-		}
-
-		console.log('Registering UI...');
+		console.log('Initializing UI...');
 		const queues = [];
-		for (const task of this.jobba.tasks.values()) queues.push({ name: task.id, hostId: task.name });
+		for (const task of this.jobba.tasks.values()) {
+			queues.push({ name: task.id, hostId: task.name });
+		}
 		const arena = Arena({
 			queues
 		}, {
@@ -108,7 +106,7 @@ export default class Server {
 			useCdn: false,
 		});
 
-		console.log('Registering API...');
+		console.log('Initializing API...');
 		this.app.use(koaStatic(path.join(__dirname, '..', 'node_modules/bull-arena/public')));
 		this.app.use(koaBody());
 		this.app.use((ctx, next) => {

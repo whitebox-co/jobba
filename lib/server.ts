@@ -1,7 +1,6 @@
 import * as Koa from 'koa';
 import * as KoaRouter from 'koa-router';
 import * as koaBody from 'koa-bodyparser';
-import routes from '../src/routes';
 
 export enum Method {
 	All = 'ALL',
@@ -45,7 +44,6 @@ export default class Server {
 
 		this.routes = [];
 
-		registrars.unshift(routes);
 		this.init(registrars);
 	}
 

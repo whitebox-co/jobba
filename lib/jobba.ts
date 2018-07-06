@@ -5,6 +5,7 @@ import * as express from 'koa-express';
 import * as koaStatic from 'koa-static';
 import * as path from 'path';
 import Server, { Registrar, ServerConfig } from './server';
+import routes from '../src/routes';
 
 interface JobbaConfig {
 	api: ServerConfig;
@@ -26,7 +27,7 @@ export default class Jobba {
 	public tasks: Map<string, Task>;
 
 	constructor(private config: JobbaConfig, ...registrars: Array<Registrar<Jobba>>) {
-		this.server = new Server(config.api);
+		this.server = new Server(config.api, routes);
 		this.tasks = new Map();
 
 		this.init(registrars);

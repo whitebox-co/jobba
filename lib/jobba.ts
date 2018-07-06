@@ -1,3 +1,4 @@
+import * as Arena from 'bull-arena';
 import * as Queue from 'bull';
 import * as _ from 'lodash';
 
@@ -22,6 +23,23 @@ export default class Jobba {
 	constructor(config = {}) {
 		this.config = config;
 		this.tasks = new Map();
+	}
+
+	public get(id) { return this.tasks.get(id); }
+	public getQueue(id) { return this.get(id).queue; }
+	public getJob(id, jobId) { return this.getQueue(id).getJob(jobId); }
+
+	public createArena() {
+		const queues = [];
+		for (const task of this.tasks.values()) {
+			queues.push({ name: task.id, hostId: task.name });
+		}
+		return new Arena({
+			queues
+		}, {
+			disableListen: true,
+			useCdn: false,
+		});
 	}
 
 	public register(task: Task) {
@@ -61,13 +79,6 @@ export default class Jobba {
 		return this.getQueue(id).close();
 	}
 	public async closeAll() { for (const [ id, queue ] of this.tasks) await this.close(id); }
-
-	public getJob(id, jobId) {
-		return this.getQueue(id).getJob(jobId);
-	}
-
-	public get(id) { return this.tasks.get(id); }
-	public getQueue(id) { return this.get(id).queue; }
 
 	public list() { return Array.from(this.tasks.keys()); }
 }

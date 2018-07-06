@@ -1,4 +1,3 @@
-import * as Arena from 'bull-arena';
 import * as Koa from 'koa';
 import * as KoaRouter from 'koa-router';
 import * as Queue from 'bull';
@@ -90,32 +89,22 @@ export default class Server {
 
 	private init(registrars: Array<Registrar>) {
 		console.log('Initializing server...');
-
-		console.log('Initializing registrars...');
-		for (const registrar of registrars) registrar(this);
-
-		console.log('Initializing UI...');
-		const queues = [];
-		for (const task of this.jobba.tasks.values()) {
-			queues.push({ name: task.id, hostId: task.name });
-		}
-		const arena = Arena({
-			queues
-		}, {
-			disableListen: true,
-			useCdn: false,
-		});
-
-		console.log('Initializing API...');
-		this.app.use(koaStatic(path.join(__dirname, '..', 'node_modules/bull-arena/public')));
+		this.app.use(koaStatic(path.join(__dirname, '..', 'node_modules/bull-arena/public').replace('/dist', '')));
 		this.app.use(koaBody());
 		this.app.use((ctx, next) => {
 			ctx.server = this;
 			ctx.jobba = this.jobba;
 			return next();
 		});
+
+		console.log('Initializing registrars...');
+		for (const registrar of registrars) registrar(this);
+
+		console.log('Initializing API...');
 		this.app.use(this.router.routes());
 		this.app.use(this.router.allowedMethods());
-		this.app.use(express(arena));
+
+		console.log('Initializing UI...');
+		this.app.use(express(this.jobba.createArena()));
 	}
 }

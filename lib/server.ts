@@ -46,15 +46,12 @@ export default class Server {
 
 	public routes: Array<Route>;
 
-	private tasks: Array<Task>;
-
 	constructor(private config: Config, tasks: Array<Task>) {
 		this.app = new Koa();
 		this.router = new KoaRouter({ prefix: '/api' });
 		this.jobba = new Jobba();
 
 		this.routes = [];
-		this.tasks = [];
 
 		this.init(routes, tasks);
 	}
@@ -98,15 +95,14 @@ export default class Server {
 
 		console.log('Registering tasks...');
 		for (const task of tasks) {
-			this.tasks.push(task);
 			this.jobba.register(task);
 		}
 
 		console.log('Registering UI...');
+		const queues = [];
+		for (const task of this.jobba.tasks.values()) queues.push({ name: task.id, hostId: task.name });
 		const arena = Arena({
-			queues: this.tasks.map((task) => (
-				{ name: task.id, hostId: task.name }
-			)),
+			queues
 		}, {
 			disableListen: true,
 			useCdn: false,

@@ -15,8 +15,9 @@ export class Task {
 }
 
 export default class Jobba {
+	public tasks: Map<string, Task>;
+
 	private config: JobbaConfig;
-	private tasks: Map<string, Task>;
 
 	constructor(config = {}) {
 		this.config = config;

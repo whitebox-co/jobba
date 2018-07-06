@@ -2,6 +2,8 @@ import * as Arena from 'bull-arena';
 import * as Queue from 'bull';
 import * as _ from 'lodash';
 import * as express from 'koa-express';
+import * as koaStatic from 'koa-static';
+import * as path from 'path';
 import Server, { Registrar, ServerConfig } from './server';
 
 interface JobbaConfig {
@@ -96,6 +98,7 @@ export default class Jobba {
 			disableListen: true,
 			useCdn: false,
 		});
+		this.server.app.use(koaStatic(path.join(__dirname, '..', 'node_modules/bull-arena/public').replace('/dist', '')));
 		this.server.app.use(express(arena));
 	}
 }

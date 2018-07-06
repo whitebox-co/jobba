@@ -1,9 +1,6 @@
 import * as Koa from 'koa';
 import * as KoaRouter from 'koa-router';
-import * as Queue from 'bull';
 import * as koaBody from 'koa-bodyparser';
-import * as koaStatic from 'koa-static';
-import * as path from 'path';
 import routes from '../src/routes';
 
 export enum Method {
@@ -85,7 +82,6 @@ export default class Server {
 
 	private init(registrars: Array<Registrar<Server>>) {
 		console.log('Initializing server...');
-		this.app.use(koaStatic(path.join(__dirname, '..', 'node_modules/bull-arena/public').replace('/dist', '')));
 		this.app.use(koaBody());
 		this.app.use((ctx, next) => {
 			ctx.server = this;

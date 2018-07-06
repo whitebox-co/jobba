@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 import * as express from 'koa-express';
 import * as koaStatic from 'koa-static';
 import * as path from 'path';
-import Server, { Registrar, ServerConfig } from './server';
+import Server, { Registrar, ServerConfig } from 'yawk';
 import routes from '../src/routes';
 
 interface JobbaConfig {
@@ -27,6 +27,7 @@ export default class Jobba {
 	public tasks: Map<string, Task>;
 
 	constructor(private config: JobbaConfig, ...registrars: Array<Registrar<Jobba>>) {
+		config.api.prefix = '/api';
 		this.server = new Server(config.api, routes);
 		this.tasks = new Map();
 

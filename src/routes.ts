@@ -1,4 +1,4 @@
-import Server, { Method } from '../lib/server';
+import Server, { Method } from 'yawk';
 
 export default function(server: Server) {
 	server.register('/', Method.Get, (ctx) => {

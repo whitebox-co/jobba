@@ -1,4 +1,5 @@
-export { default as Jobba } from './jobba';
+import Jobba from './jobba';
+export default Jobba;
 export * from './jobba';
 
 export { default as Server } from './server';

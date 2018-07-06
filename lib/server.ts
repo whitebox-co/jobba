@@ -1,11 +1,9 @@
 import * as Koa from 'koa';
 import * as KoaRouter from 'koa-router';
 import * as Queue from 'bull';
-import * as express from 'koa-express';
 import * as koaBody from 'koa-bodyparser';
 import * as koaStatic from 'koa-static';
 import * as path from 'path';
-import Jobba, { Task } from './jobba';
 import routes from '../src/routes';
 
 export enum Method {
@@ -19,7 +17,7 @@ export enum Method {
 }
 
 export type Handler = (ctx: Koa.Context, next?: () => void) => any;
-export type Registrar = (server: Server) => any;
+export type Registrar<T> = (registrar: T) => any;
 
 export interface Route {
 	path: string;
@@ -34,21 +32,19 @@ interface RouteOptions {
 	description?: string;
 }
 
-export interface Config {
+export interface ServerConfig {
 	port: number;
 }
 
 export default class Server {
 	app: Koa;
 	router: KoaRouter;
-	jobba: Jobba;
 
 	public routes: Array<Route>;
 
-	constructor(private config: Config, ...registrars: Array<Registrar>) {
+	constructor(private config: ServerConfig, ...registrars: Array<Registrar<Server>>) {
 		this.app = new Koa();
 		this.router = new KoaRouter({ prefix: '/api' });
-		this.jobba = new Jobba();
 
 		this.routes = [];
 
@@ -87,13 +83,12 @@ export default class Server {
 		this.app.listen(this.config.port);
 	}
 
-	private init(registrars: Array<Registrar>) {
+	private init(registrars: Array<Registrar<Server>>) {
 		console.log('Initializing server...');
 		this.app.use(koaStatic(path.join(__dirname, '..', 'node_modules/bull-arena/public').replace('/dist', '')));
 		this.app.use(koaBody());
 		this.app.use((ctx, next) => {
 			ctx.server = this;
-			ctx.jobba = this.jobba;
 			return next();
 		});
 
@@ -103,8 +98,5 @@ export default class Server {
 		console.log('Initializing API...');
 		this.app.use(this.router.routes());
 		this.app.use(this.router.allowedMethods());
-
-		console.log('Initializing UI...');
-		this.app.use(express(this.jobba.createArena()));
 	}
 }

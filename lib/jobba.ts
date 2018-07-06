@@ -1,8 +1,12 @@
 import * as Arena from 'bull-arena';
 import * as Queue from 'bull';
 import * as _ from 'lodash';
+import * as express from 'koa-express';
+import Server, { Registrar, ServerConfig } from './server';
 
-interface JobbaConfig {}
+interface JobbaConfig {
+	api: ServerConfig;
+}
 
 type JobHandler = (job: Queue.Job) => Promise<any> | void;
 
@@ -16,30 +20,25 @@ export class Task {
 }
 
 export default class Jobba {
+	public server: Server;
 	public tasks: Map<string, Task>;
 
-	private config: JobbaConfig;
-
-	constructor(config = {}) {
-		this.config = config;
+	constructor(private config: JobbaConfig, ...registrars: Array<Registrar<Jobba>>) {
+		this.server = new Server(config.api);
 		this.tasks = new Map();
+
+		this.init(registrars);
 	}
 
 	public get(id) { return this.tasks.get(id); }
 	public getQueue(id) { return this.get(id).queue; }
 	public getJob(id, jobId) { return this.getQueue(id).getJob(jobId); }
 
+	public start() {
+		this.server.start();
+	}
+
 	public createArena() {
-		const queues = [];
-		for (const task of this.tasks.values()) {
-			queues.push({ name: task.id, hostId: task.name });
-		}
-		return new Arena({
-			queues
-		}, {
-			disableListen: true,
-			useCdn: false,
-		});
 	}
 
 	public register(task: Task) {
@@ -81,4 +80,22 @@ export default class Jobba {
 	public async closeAll() { for (const [ id, queue ] of this.tasks) await this.close(id); }
 
 	public list() { return Array.from(this.tasks.keys()); }
+
+	private init(registrars: Array<Registrar<Jobba>>) {
+		console.log('Initializing tasks...');
+		for (const registrar of registrars) registrar(this);
+
+		console.log('Initializing UI...');
+		const queues = [];
+		for (const task of this.tasks.values()) {
+			queues.push({ name: task.id, hostId: task.name });
+		}
+		const arena = new Arena({
+			queues
+		}, {
+			disableListen: true,
+			useCdn: false,
+		});
+		this.server.app.use(express(arena));
+	}
 }

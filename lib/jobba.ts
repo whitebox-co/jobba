@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 import * as express from 'koa-express';
 import * as koaStatic from 'koa-static';
 import * as path from 'path';
-import Server, { Registrar, YawkConfig } from 'yawk';
+import Yawk, { Registrar, YawkConfig } from 'yawk';
 import routes from '../src/routes';
 
 interface JobbaConfig {
@@ -23,12 +23,12 @@ export class Task {
 }
 
 export default class Jobba {
-	public server: Server;
+	public yawk: Yawk;
 	public tasks: Map<string, Task>;
 
 	constructor(private config: JobbaConfig, ...registrars: Array<Registrar<Jobba>>) {
 		config.api.prefix = '/api';
-		this.server = new Server(config.api, routes);
+		this.yawk = new Yawk(config.api, routes);
 		this.tasks = new Map();
 
 		this.init(registrars);
@@ -39,7 +39,7 @@ export default class Jobba {
 	public getJob(id, jobId) { return this.getQueue(id).getJob(jobId); }
 
 	public start() {
-		this.server.start();
+		this.yawk.start();
 	}
 
 	public createArena() {
@@ -100,7 +100,7 @@ export default class Jobba {
 			disableListen: true,
 			useCdn: false,
 		});
-		this.server.app.use(koaStatic(path.join(__dirname, '..', 'node_modules/bull-arena/public').replace('/dist', '')));
-		this.server.app.use(express(arena));
+		this.yawk.app.use(koaStatic(path.join(__dirname, '..', 'node_modules/bull-arena/public').replace('/dist', '')));
+		this.yawk.app.use(express(arena));
 	}
 }

@@ -1,4 +1,5 @@
 import * as Arena from 'bull-arena';
+import * as Bluebird from 'bluebird';
 import * as Queue from 'bull';
 import * as _ from 'lodash';
 import * as express from 'koa-express';

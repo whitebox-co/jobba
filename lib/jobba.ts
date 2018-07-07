@@ -4,11 +4,11 @@ import * as _ from 'lodash';
 import * as express from 'koa-express';
 import * as koaStatic from 'koa-static';
 import * as path from 'path';
-import Server, { Registrar, ServerConfig } from 'yawk';
+import Server, { Registrar, YawkConfig } from 'yawk';
 import routes from '../src/routes';
 
 interface JobbaConfig {
-	api: ServerConfig;
+	api: YawkConfig;
 }
 
 type JobHandler = (job: Queue.Job) => Promise<any> | void;

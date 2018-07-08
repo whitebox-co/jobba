@@ -43,9 +43,6 @@ export default class Jobba {
 		this.yawk.start();
 	}
 
-	public createArena() {
-	}
-
 	public register(task: Task) {
 		if (this.tasks.has(task.id)) throw new Error('Job already registered.');
 

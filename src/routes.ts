@@ -10,14 +10,6 @@ export default function(server: Server) {
 	});
 
 	server.register({
-		path: '/routes',
-		description: 'Route info.',
-		handler: (ctx) => {
-			return server.routes.filter((route) => !route.private);
-		},
-	});
-
-	server.register({
 		path: '/tasks',
 		handler: (ctx) => {
 			return ctx.jobba.list();

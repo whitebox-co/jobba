@@ -1,21 +1,15 @@
-import Jobba, { Task } from '../../lib/jobba';
-import Server, { Method } from 'yawk';
-import { Context } from 'koa';
+import Jobba, { JobbaContext, Task } from '../../lib/jobba';
+import Yawk, { Method } from 'yawk';
 
-interface JobbaContext extends Context {
-	jobba?: Jobba;
-	task?: Task;
-}
-
-export default function(server: Server) {
-	server.register({
+export default function(yawk: Yawk) {
+	yawk.register({
 		path: '/tasks',
 		handler: (ctx: JobbaContext) => {
 			return ctx.jobba.list();
 		},
 	});
 
-	server.register({
+	yawk.register({
 		path: '/tasks/:id',
 		private: true,
 		handler: async (ctx: JobbaContext) => {
@@ -24,7 +18,7 @@ export default function(server: Server) {
 		},
 	});
 
-	server.register({
+	yawk.register({
 		path: '/tasks/:id/*',
 		method: Method.All,
 		handler: (ctx: JobbaContext, next) => {
@@ -33,7 +27,7 @@ export default function(server: Server) {
 		},
 	});
 
-	server.register({
+	yawk.register({
 		path: '/tasks/:id/schedule',
 		method: Method.Post,
 		handler: (ctx: JobbaContext) => {
@@ -42,7 +36,7 @@ export default function(server: Server) {
 		},
 	});
 
-	server.register({
+	yawk.register({
 		path: '/tasks/:id/pause',
 		method: Method.Post,
 		handler: (ctx: JobbaContext) => {
@@ -50,21 +44,21 @@ export default function(server: Server) {
 		},
 	});
 
-	server.register({
+	yawk.register({
 		path: '/tasks/:id/resume',
 		handler: (ctx: JobbaContext) => {
 			return ctx.jobba.resume(ctx.params.id);
 		},
 	});
 
-	server.register({
+	yawk.register({
 		path: '/tasks/:id/count',
 		handler: (ctx: JobbaContext) => {
 			return ctx.jobba.count(ctx.params.id);
 		},
 	});
 
-	server.register({
+	yawk.register({
 		path: '/tasks/:id/empty',
 		method: Method.Post,
 		handler: (ctx: JobbaContext) => {
@@ -72,7 +66,7 @@ export default function(server: Server) {
 		},
 	});
 
-	server.register({
+	yawk.register({
 		path: '/tasks/:id/close',
 		method: Method.Post,
 		handler: (ctx: JobbaContext) => {
@@ -80,7 +74,7 @@ export default function(server: Server) {
 		},
 	});
 
-	server.register({
+	yawk.register({
 		path: '/tasks/:id/getJob',
 		handler: (ctx: JobbaContext) => {
 			const { jobId } = ctx.request.query;
@@ -88,7 +82,7 @@ export default function(server: Server) {
 		},
 	});
 
-	server.register({
+	yawk.register({
 		path: '/tasks/:id/getJobs',
 		handler: (ctx: JobbaContext) => {
 			const { types, start, end, asc } = ctx.request.query;

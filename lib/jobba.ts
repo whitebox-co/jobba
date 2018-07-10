@@ -7,9 +7,15 @@ import * as koaStatic from 'koa-static';
 import * as path from 'path';
 import Yawk, { Registrar, YawkConfig } from 'yawk';
 import routes from '../src/routes';
+import { Context } from 'koa';
 
 interface JobbaConfig {
 	api: YawkConfig;
+}
+
+export interface JobbaContext extends Context {
+	jobba?: Jobba;
+	task?: Task;
 }
 
 type JobHandler = (job: Queue.Job) => Promise<any> | void;
@@ -29,7 +35,8 @@ export default class Jobba {
 
 	constructor(private config: JobbaConfig, ...registrars: Array<Registrar<Jobba>>) {
 		config.api.prefix = '/api';
-		this.yawk = new Yawk(config.api, routes);
+		config.api.init = false;
+		this.yawk = new Yawk(config.api);
 		this.tasks = new Map();
 
 		this.init(registrars);
@@ -84,6 +91,14 @@ export default class Jobba {
 	public list() { return Array.from(this.tasks.keys()); }
 
 	private init(registrars: Array<Registrar<Jobba>>) {
+		console.log('Initializing Jobba...');
+		// TODO: make this middleware just for task routes
+		this.yawk.app.use((ctx: JobbaContext, next) => {
+			ctx.jobba = this;
+			return next();
+		});
+		this.yawk.init([ routes ]);
+
 		console.log('Initializing tasks...');
 		for (const registrar of registrars) registrar(this);
 

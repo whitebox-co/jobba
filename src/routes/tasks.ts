@@ -1,6 +1,6 @@
-import { Context } from 'koa';
-import Jobba, { Task } from '../lib/jobba';
+import Jobba, { Task } from '../../lib/jobba';
 import Server, { Method } from 'yawk';
+import { Context } from 'koa';
 
 interface JobbaContext extends Context {
 	jobba?: Jobba;
@@ -8,14 +8,6 @@ interface JobbaContext extends Context {
 }
 
 export default function(server: Server) {
-	server.register({
-		path: '/',
-		description: 'Status check.',
-		handler: (ctx: JobbaContext) => {
-			return true;
-		},
-	});
-
 	server.register({
 		path: '/tasks',
 		handler: (ctx: JobbaContext) => {

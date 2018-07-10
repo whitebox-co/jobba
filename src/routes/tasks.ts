@@ -10,10 +10,29 @@ export default function(yawk: Yawk) {
 	});
 
 	yawk.register({
+		path: '/tasks/repeating',
+		private: true,
+		handler: async (ctx: JobbaContext) => {
+			const result = [];
+			for (const [ , task ] of ctx.jobba.tasks) {
+				const jobs = await task.queue.getRepeatableJobs();
+				for (const job of jobs) {
+					result.push({
+						id: task.id,
+						name: task.name,
+						cron: job.cron,
+						next: new Date(job.next),
+					});
+				}
+			}
+			return result;
+		},
+	});
+
+	yawk.register({
 		path: '/tasks/:id',
 		private: true,
 		handler: async (ctx: JobbaContext) => {
-			ctx.task = ctx.jobba.get(ctx.params.id);
 			return true;
 		},
 	});

@@ -1,17 +1,24 @@
+import { Context } from 'koa';
+import Jobba, { Task } from '../lib/jobba';
 import Server, { Method } from 'yawk';
+
+interface JobbaContext extends Context {
+	jobba?: Jobba;
+	task?: Task;
+}
 
 export default function(server: Server) {
 	server.register({
 		path: '/',
 		description: 'Status check.',
-		handler: (ctx) => {
+		handler: (ctx: JobbaContext) => {
 			return true;
 		},
 	});
 
 	server.register({
 		path: '/tasks',
-		handler: (ctx) => {
+		handler: (ctx: JobbaContext) => {
 			return ctx.jobba.list();
 		},
 	});
@@ -19,7 +26,7 @@ export default function(server: Server) {
 	server.register({
 		path: '/tasks/:id',
 		private: true,
-		handler: async (ctx) => {
+		handler: async (ctx: JobbaContext) => {
 			ctx.task = ctx.jobba.get(ctx.params.id);
 			return true;
 		},
@@ -28,7 +35,7 @@ export default function(server: Server) {
 	server.register({
 		path: '/tasks/:id/*',
 		method: Method.All,
-		handler: (ctx, next) => {
+		handler: (ctx: JobbaContext, next) => {
 			ctx.task = ctx.jobba.get(ctx.params.id);
 			return next();
 		},
@@ -37,8 +44,8 @@ export default function(server: Server) {
 	server.register({
 		path: '/tasks/:id/schedule',
 		method: Method.Post,
-		handler: (ctx) => {
-			const { data, options } = ctx.request.body;
+		handler: (ctx: JobbaContext) => {
+			const { data, options } = ctx.request.body as any;
 			return ctx.jobba.schedule(ctx.params.id, data, options);
 		},
 	});
@@ -46,21 +53,21 @@ export default function(server: Server) {
 	server.register({
 		path: '/tasks/:id/pause',
 		method: Method.Post,
-		handler: (ctx) => {
+		handler: (ctx: JobbaContext) => {
 			return ctx.jobba.pause(ctx.params.id);
 		},
 	});
 
 	server.register({
 		path: '/tasks/:id/resume',
-		handler: (ctx) => {
+		handler: (ctx: JobbaContext) => {
 			return ctx.jobba.resume(ctx.params.id);
 		},
 	});
 
 	server.register({
 		path: '/tasks/:id/count',
-		handler: (ctx) => {
+		handler: (ctx: JobbaContext) => {
 			return ctx.jobba.count(ctx.params.id);
 		},
 	});
@@ -68,7 +75,7 @@ export default function(server: Server) {
 	server.register({
 		path: '/tasks/:id/empty',
 		method: Method.Post,
-		handler: (ctx) => {
+		handler: (ctx: JobbaContext) => {
 			return ctx.jobba.empty(ctx.params.id);
 		},
 	});
@@ -76,14 +83,14 @@ export default function(server: Server) {
 	server.register({
 		path: '/tasks/:id/close',
 		method: Method.Post,
-		handler: (ctx) => {
+		handler: (ctx: JobbaContext) => {
 			return ctx.jobba.close(ctx.params.id);
 		},
 	});
 
 	server.register({
 		path: '/tasks/:id/getJob',
-		handler: (ctx) => {
+		handler: (ctx: JobbaContext) => {
 			const { jobId } = ctx.request.query;
 			return ctx.jobba.getJob(ctx.params.id, jobId);
 		},
@@ -91,9 +98,9 @@ export default function(server: Server) {
 
 	server.register({
 		path: '/tasks/:id/getJobs',
-		handler: (ctx) => {
+		handler: (ctx: JobbaContext) => {
 			const { types, start, end, asc } = ctx.request.query;
-			return ctx.task.queue.getJobs(types, start, end, asc);
+			return (ctx.task.queue as any).getJobs(types, start, end, asc);
 		},
 	});
 }

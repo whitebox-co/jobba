@@ -1,3 +1,4 @@
+import * as joi from 'joi';
 import Jobba, { JobbaContext, Task } from '../../lib';
 import Yawk, { Method } from 'yawk';
 
@@ -95,6 +96,9 @@ export default function(yawk: Yawk) {
 
 	yawk.register({
 		path: '/tasks/:id/getJob',
+		schema: {
+			jobId: joi.string()
+		},
 		handler: (ctx: JobbaContext) => {
 			const { jobId } = ctx.request.query;
 			return ctx.task.getJob(jobId);

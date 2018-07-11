@@ -20,6 +20,7 @@
   "dependencies": {
     "bull": "^3.4.2",
     "bull-arena": "^2.4.5",
+    "joi": "^13.4.0",
     "koa": "^2.5.0",
     "koa-bodyparser": "^4.2.0",
     "koa-express": "^1.1.0",

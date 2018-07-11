@@ -50,9 +50,44 @@ export default function(yawk: Yawk) {
 	yawk.register({
 		path: '/tasks/:id/schedule',
 		method: Method.Post,
+		schema: {
+			params: joi.any(),
+			options: {
+				priority: joi.number(),
+				delay: joi.number(),
+				attempts: joi.number(),
+				repeat: {
+					cron: joi.string(),
+					tz: joi.string(),
+					endDate: joi.any()
+						// .concat(joi.date())
+						// .concat(joi.string())
+						// .concat(joi.number())
+					,
+					limit: joi.number(),
+					every: joi.number(),
+				},
+				backoff: joi.any()
+					// .concat(joi.number())
+					// .concat(joi.object({
+					// 	type: joi.string(),
+					// 	delay: joi.number(),
+					// }))
+				,
+				lifo: joi.boolean(),
+				timeout: joi.number(),
+				jobId: joi.any()
+					// .concat(joi.number())
+					// .concat(joi.string())
+				,
+				removeOnComplete: joi.boolean(),
+				removeOnFail: joi.boolean(),
+				stackTraceLimit: joi.number(),
+			},
+		},
 		handler: (ctx: JobbaContext) => {
-			const { data, options } = ctx.request.body as any;
-			return ctx.jobba.schedule(ctx.params.id, data, options);
+			const { params, options } = ctx.request.body as any;
+			return ctx.jobba.schedule(ctx.params.id, params, options);
 		},
 	});
 

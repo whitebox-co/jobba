@@ -35,8 +35,8 @@ export default class Task {
 		return toPromise((this.queue as any).getJobs(types, start, end, asc));
 	}
 
-	public schedule(data: any, options?: Bull.JobOptions) {
-		return toPromise(this.queue.add(data, options));
+	public schedule(params: any, options?: Bull.JobOptions) {
+		return toPromise(this.queue.add(params, options));
 	}
 
 	public pause() {

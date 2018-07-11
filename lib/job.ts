@@ -10,16 +10,16 @@ interface Log {
 
 export default class Job {
 	private data: {
+		input: any;
+		output: any;
 		logs: Array<Log>;
-		params: any;
-		state: any;
 	};
 
 	constructor(private job: Bull.Job) {
 		this.data = {
+			input: job.data,
+			output: undefined,
 			logs: [],
-			params: job.data,
-			state: undefined,
 		};
 	}
 
@@ -32,8 +32,8 @@ export default class Job {
 	public promote() { return toPromise(this.job.promote()); }
 	public finished() { return toPromise(this.job.finished()); }
 
-	public update(state?: any) {
-		if (arguments.length) this.data.state = state;
+	public update(value?: any) {
+		if (arguments.length) this.data.output = value;
 		return toPromise(this.job.update(this.data));
 	}
 

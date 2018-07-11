@@ -50,7 +50,7 @@ export default function(yawk: Yawk) {
 	yawk.register({
 		path: '/tasks/:id/schedule',
 		method: Method.Post,
-		schema: {
+		inputSchema: {
 			params: joi.any(),
 			options: {
 				priority: joi.number(),
@@ -131,7 +131,7 @@ export default function(yawk: Yawk) {
 
 	yawk.register({
 		path: '/tasks/:id/getJob',
-		schema: {
+		inputSchema: {
 			jobId: joi.string(),
 		},
 		handler: (ctx: JobbaContext) => {
@@ -142,7 +142,7 @@ export default function(yawk: Yawk) {
 
 	yawk.register({
 		path: '/tasks/:id/getJobs',
-		schema: {
+		inputSchema: {
 			types: joi.array().items(joi.string()),
 			start: joi.number(),
 			end: joi.number(),

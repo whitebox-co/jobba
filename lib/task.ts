@@ -1,8 +1,9 @@
 import * as Bull from 'bull';
 import * as _ from 'lodash';
+import Job from './job';
 import { toPromise } from './utils';
 
-type JobHandler = (job: Bull.Job) => Promise<any> | void;
+type JobHandler = (job: Job) => Promise<any> | void;
 
 export default class Task {
 	public name;
@@ -12,7 +13,9 @@ export default class Task {
 	constructor(public id: string, public handler: JobHandler, private options?: Bull.QueueOptions) {
 		this.name = _.capitalize(_.words(id).join(' '));
 		this.queue = new Bull(this.id, this.options);
-		this.queue.process(this.handler);
+		this.queue.process((bullJob: Bull.Job) => {
+			this.handler(new Job(bullJob));
+		});
 	}
 
 	public getQueue(): Bull.Queue {
@@ -23,7 +26,12 @@ export default class Task {
 		return toPromise(this.queue.getJob(jobId));
 	}
 
-	public getJobs(types: Array<string>, start?: number, end?: number, asc?: boolean): Promise<Array<Bull.Job>> {
+	public getJobs(
+		types: Array<string>,
+		start?: number,
+		end?: number,
+		asc?: boolean
+	): Promise<Array<Bull.Job>> {
 		return toPromise((this.queue as any).getJobs(types, start, end, asc));
 	}
 

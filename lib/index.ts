@@ -5,5 +5,5 @@ export * from './jobba';
 import Task from './task';
 export { Task };
 
-import { Job, Queue } from 'bull';
-export { Job, Queue };
+import Job from './job';
+export { Job };

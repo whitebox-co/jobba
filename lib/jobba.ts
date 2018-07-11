@@ -46,7 +46,7 @@ export default class Jobba {
 	}
 
 	public schedule(id: string, data: any, options?: Bull.JobOptions) {
-		return this.getTask(id).queue.add(data, options);
+		return this.getTask(id).schedule(data, options);
 	}
 
 	public list() {

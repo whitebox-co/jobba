@@ -16,7 +16,7 @@ export default function(yawk: Yawk) {
 		handler: async (ctx: JobbaContext) => {
 			const result = [];
 			for (const [ , task ] of ctx.jobba.tasks) {
-				const jobs = await task.queue.getRepeatableJobs();
+				const jobs = await task.getQueue().getRepeatableJobs();
 				for (const job of jobs) {
 					result.push({
 						id: task.id,
@@ -97,7 +97,7 @@ export default function(yawk: Yawk) {
 	yawk.register({
 		path: '/tasks/:id/getJob',
 		schema: {
-			jobId: joi.string()
+			jobId: joi.string(),
 		},
 		handler: (ctx: JobbaContext) => {
 			const { jobId } = ctx.request.query;
@@ -107,9 +107,15 @@ export default function(yawk: Yawk) {
 
 	yawk.register({
 		path: '/tasks/:id/getJobs',
+		schema: {
+			types: joi.array().items(joi.string()),
+			start: joi.number(),
+			end: joi.number(),
+			asc: joi.boolean(),
+		},
 		handler: (ctx: JobbaContext) => {
 			const { types, start, end, asc } = ctx.request.query;
-			return (ctx.task.queue as any).getJobs(types, start, end, asc);
+			return ctx.task.getJobs(types, start, end, asc);
 		},
 	});
 }

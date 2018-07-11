@@ -39,23 +39,9 @@ export default class Task {
 		return toPromise(this.queue.add(params, options));
 	}
 
-	public pause() {
-		return toPromise(this.queue.pause());
-	}
-
-	public resume() {
-		return toPromise(this.queue.resume());
-	}
-
-	public count() {
-		return toPromise(this.queue.count());
-	}
-
-	public empty() {
-		return toPromise(this.queue.empty());
-	}
-
-	public close() {
-		return toPromise(this.queue.close());
-	}
+	public pause() { return toPromise(this.queue.pause()); }
+	public resume() { return toPromise(this.queue.resume()); }
+	public count() { return toPromise(this.queue.count()); }
+	public empty() { return toPromise(this.queue.empty()); }
+	public close() { return toPromise(this.queue.close()); }
 }

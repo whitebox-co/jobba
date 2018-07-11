@@ -1,4 +1,4 @@
-import Jobba, { JobbaContext, Task } from '../../lib/jobba';
+import Jobba, { JobbaContext, Task } from '../../lib';
 import Yawk, { Method } from 'yawk';
 
 export default function(yawk: Yawk) {

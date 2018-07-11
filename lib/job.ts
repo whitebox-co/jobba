@@ -11,12 +11,14 @@ interface Log {
 export default class Job {
 	private data: {
 		logs: Array<Log>;
+		params: any;
 		state: any;
 	};
 
 	constructor(private job: Bull.Job) {
 		this.data = {
 			logs: [],
+			params: job.data,
 			state: undefined,
 		};
 	}

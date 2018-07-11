@@ -1,19 +1,19 @@
-import * as Queue from 'bull';
+import * as Bull from 'bull';
 import * as _ from 'lodash';
 
-type JobHandler = (job: Queue.Job) => Promise<any> | void;
+type JobHandler = (job: Bull.Job) => Promise<any> | void;
 
 export default class Task {
 	public name;
-	public queue: Queue.Queue;
+	public queue: Bull.Queue;
 
-	constructor(public id: string, public handler: JobHandler, public options?: Queue.QueueOptions) {
+	constructor(public id: string, public handler: JobHandler, public options?: Bull.QueueOptions) {
 		this.name = _.capitalize(_.words(id).join(' '));
-		this.queue = new Queue(this.id, this.options);
+		this.queue = new Bull(this.id, this.options);
 		this.queue.process(this.handler);
 	}
 
-	public getJob(jobId): Promise<Queue.Job> {
+	public getJob(jobId): Promise<Bull.Job> {
 		return toPromise(this.queue.getJob(jobId));
 	}
 

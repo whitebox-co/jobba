@@ -1,6 +1,6 @@
 import * as Arena from 'bull-arena';
 import * as Bluebird from 'bluebird';
-import * as Queue from 'bull';
+import * as Bull from 'bull';
 import * as _ from 'lodash';
 import * as express from 'koa-express';
 import * as koaStatic from 'koa-static';
@@ -45,7 +45,7 @@ export default class Jobba {
 		this.tasks.set(task.id, task);
 	}
 
-	public schedule(id: string, data: any, options?: Queue.JobOptions) {
+	public schedule(id: string, data: any, options?: Bull.JobOptions) {
 		return this.getTask(id).queue.add(data, options);
 	}
 

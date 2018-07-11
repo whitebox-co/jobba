@@ -1,5 +1,6 @@
 import * as Bull from 'bull';
 import * as _ from 'lodash';
+import { toPromise } from './utils';
 
 type JobHandler = (job: Bull.Job) => Promise<any> | void;
 
@@ -49,8 +50,4 @@ export default class Task {
 	public close() {
 		return toPromise(this.queue.close());
 	}
-}
-
-function toPromise(promish) {
-	return Promise.resolve(promish);
 }

@@ -32,9 +32,9 @@ export default class Jobba {
 		this.init(registrars);
 	}
 
-	public get(id) { return this.tasks.get(id); }
-	public getQueue(id) { return this.get(id).queue; }
-	public getJob(id, jobId) { return this.getQueue(id).getJob(jobId); }
+	public getTask(id): Task {
+		return this.tasks.get(id);
+	}
 
 	public start() {
 		this.yawk.start();
@@ -42,43 +42,21 @@ export default class Jobba {
 
 	public register(task: Task) {
 		if (this.tasks.has(task.id)) throw new Error('Job already registered.');
-
-		const queue = new Queue(task.id, task.options);
-		task.queue = queue;
 		this.tasks.set(task.id, task);
-		queue.process(task.handler);
-		return queue;
 	}
 
 	public schedule(id: string, data: any, options?: Queue.JobOptions) {
-		return this.tasks.get(id).queue.add(data, options);
+		return this.getTask(id).queue.add(data, options);
 	}
 
-	public pause(id) {
-		return this.getQueue(id).pause();
-	}
-	async pauseAll() { for (const [ id, queue ] of this.tasks) await this.pause(id); }
-
-	public resume(id) {
-		return this.getQueue(id).resume();
-	}
-	async resumeAll() { for (const [ id, queue ] of this.tasks) await this.resume(id); }
-
-	public count(id) {
-		return this.getQueue(id).count();
+	public list() {
+		return Array.from(this.tasks.keys());
 	}
 
-	public empty(id) {
-		return this.getQueue(id).empty();
-	}
-	public async emptyAll() { for (const [ id, queue ] of this.tasks) await this.empty(id); }
-
-	public close(id) {
-		return this.getQueue(id).close();
-	}
-	public async closeAll() { for (const [ id, queue ] of this.tasks) await this.close(id); }
-
-	public list() { return Array.from(this.tasks.keys()); }
+	public async closeAll() { for (const [ , task ] of this.tasks) await task.close(); }
+	public async emptyAll() { for (const [ , task ] of this.tasks) await task.empty(); }
+	public async pauseAll() { for (const [ , task ] of this.tasks) await task.pause(); }
+	public async resumeAll() { for (const [ , task ] of this.tasks) await task.resume(); }
 
 	private init(registrars: Array<Registrar<Jobba>>) {
 		console.log('Initializing Jobba...');

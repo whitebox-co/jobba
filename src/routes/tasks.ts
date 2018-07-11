@@ -41,7 +41,7 @@ export default function(yawk: Yawk) {
 		path: '/tasks/:id/*',
 		method: Method.All,
 		handler: (ctx: JobbaContext, next) => {
-			ctx.task = ctx.jobba.get(ctx.params.id);
+			ctx.task = ctx.jobba.getTask(ctx.params.id);
 			return next();
 		},
 	});
@@ -59,21 +59,21 @@ export default function(yawk: Yawk) {
 		path: '/tasks/:id/pause',
 		method: Method.Post,
 		handler: (ctx: JobbaContext) => {
-			return ctx.jobba.pause(ctx.params.id);
+			return ctx.task.pause();
 		},
 	});
 
 	yawk.register({
 		path: '/tasks/:id/resume',
 		handler: (ctx: JobbaContext) => {
-			return ctx.jobba.resume(ctx.params.id);
+			return ctx.task.resume();
 		},
 	});
 
 	yawk.register({
 		path: '/tasks/:id/count',
 		handler: (ctx: JobbaContext) => {
-			return ctx.jobba.count(ctx.params.id);
+			return ctx.task.count();
 		},
 	});
 
@@ -81,7 +81,7 @@ export default function(yawk: Yawk) {
 		path: '/tasks/:id/empty',
 		method: Method.Post,
 		handler: (ctx: JobbaContext) => {
-			return ctx.jobba.empty(ctx.params.id);
+			return ctx.task.empty();
 		},
 	});
 
@@ -89,7 +89,7 @@ export default function(yawk: Yawk) {
 		path: '/tasks/:id/close',
 		method: Method.Post,
 		handler: (ctx: JobbaContext) => {
-			return ctx.jobba.close(ctx.params.id);
+			return ctx.task.close();
 		},
 	});
 
@@ -97,7 +97,7 @@ export default function(yawk: Yawk) {
 		path: '/tasks/:id/getJob',
 		handler: (ctx: JobbaContext) => {
 			const { jobId } = ctx.request.query;
-			return ctx.jobba.getJob(ctx.params.id, jobId);
+			return ctx.task.getJob(jobId);
 		},
 	});
 

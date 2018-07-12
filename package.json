@@ -19,7 +19,7 @@
   "license": "ISC",
   "dependencies": {
     "bull": "^3.4.2",
-    "bull-arena": "^2.4.5",
+    "bull-arena": "git+https://github.com/ConnectAi/arena.git#dev",
     "joi": "^13.4.0",
     "koa": "^2.5.0",
     "koa-bodyparser": "^4.2.0",

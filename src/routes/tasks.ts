@@ -11,18 +11,20 @@ export default function(yawk: Yawk) {
 	});
 
 	yawk.register({
-		path: '/tasks/repeating',
+		path: '/tasks/scheduled',
 		private: true,
 		handler: async (ctx: JobbaContext) => {
 			const result = [];
 			for (const [ , task ] of ctx.jobba.tasks) {
-				const jobs = await task.getQueue().getRepeatableJobs();
+				const jobs = await task.getQueue().getDelayed();
 				for (const job of jobs) {
 					result.push({
 						id: task.id,
 						name: task.name,
-						cron: job.cron,
-						next: new Date(job.next),
+						cron: (job as any).opts.repeat.cron,
+						next: new Date((job as any).timestamp + (job as any).delay),
+						repeat: (job as any).opts.repeat,
+						input: job.data,
 					});
 				}
 			}

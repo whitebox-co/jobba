@@ -21,6 +21,7 @@ export default function(yawk: Yawk) {
 					result.push({
 						id: task.id,
 						name: task.name,
+						description: task.description,
 						cron: (job as any).opts.repeat.cron,
 						next: new Date((job as any).timestamp + (job as any).delay),
 						repeat: (job as any).opts.repeat,

@@ -38,11 +38,13 @@ export default class Job {
 	}
 
 	public log(level: LogLevel, ...body) {
-		this.data.logs.push({
+		const log: Log = {
 			level,
 			time: new Date(),
 			body,
-		});
+		};
+		console[log.level](log);
+		this.data.logs.push(log);
 		return this.update();
 	}
 	public debug(...body) { return this.log('debug', ...body); }

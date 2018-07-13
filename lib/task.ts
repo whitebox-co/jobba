@@ -5,14 +5,29 @@ import { toPromise } from './utils';
 
 type JobHandler = (job: Job) => Promise<any> | void;
 
-export default class Task {
-	public name;
+export interface TaskParams {
+	id: string;
+	handler: JobHandler;
+	name?: string;
+	description?: string;
+	options?: Bull.QueueOptions;
+}
+
+export default class Task implements TaskParams {
+	public id: string;
+	public handler: JobHandler;
+	public name: string;
+	public description: string;
 
 	private queue: Bull.Queue;
 
-	constructor(public id: string, public handler: JobHandler, private options?: Bull.QueueOptions) {
-		this.name = _.capitalize(_.words(id).join(' '));
-		this.queue = new Bull(this.id, this.options);
+	constructor(params: TaskParams) {
+		this.id = params.id;
+		this.handler = params.handler;
+		this.name = params.name || _.capitalize(_.words(this.id).join(' '));
+		this.description = params.description;
+
+		this.queue = new Bull(this.id, params.options);
 		this.queue.process((bullJob: Bull.Job) => {
 			this.handler(new Job(bullJob));
 		});

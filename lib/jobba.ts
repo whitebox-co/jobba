@@ -5,7 +5,7 @@ import * as _ from 'lodash';
 import * as express from 'koa-express';
 import * as koaStatic from 'koa-static';
 import * as path from 'path';
-import Task from './task';
+import Task, { TaskParams } from './task';
 import Yawk, { Registrar, YawkConfig } from 'yawk';
 import routes from '../src/routes';
 import { Context } from 'koa';
@@ -40,8 +40,14 @@ export default class Jobba {
 		this.yawk.start();
 	}
 
-	public register(task: Task) {
-		if (this.tasks.has(task.id)) throw new Error('Job already registered.');
+	public register(params: Task | TaskParams) {
+		if (this.tasks.has(params.id)) throw new Error('Job already registered.');
+		let task: Task;
+		if (params instanceof Task) {
+			task = params;
+		} else {
+			task = new Task(params);
+		}
 		this.tasks.set(task.id, task);
 	}
 

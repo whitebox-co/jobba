@@ -10,7 +10,7 @@ import defaultsDeep from 'lodash/defaultsDeep';
 import routes from '../src/routes';
 import { Context } from 'koa';
 
-interface JobbaConfig {
+export interface JobbaConfig {
 	yawk: YawkConfig;
 }
 

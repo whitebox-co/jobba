@@ -28,9 +28,7 @@ export default class Task implements TaskParams {
 		this.description = params.description;
 
 		this.queue = new Bull(this.id, params.options);
-		this.queue.process((bullJob: Bull.Job) => {
-			this.handler(new Job(bullJob));
-		});
+		this.queue.process((bullJob: Bull.Job) => this.handler(new Job(bullJob)));
 	}
 
 	public getQueue(): Bull.Queue {

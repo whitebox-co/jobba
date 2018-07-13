@@ -95,6 +95,8 @@ export default class Jobba {
 			disableListen: true,
 			useCdn: false,
 		});
+		// Make UI work in both normal and linked dev environments, respectively
+		this.yawk.app.use(koaStatic(path.join(__dirname, '../../..', 'bull-arena/public').replace('/dist', '')));
 		this.yawk.app.use(koaStatic(path.join(__dirname, '..', 'node_modules/bull-arena/public').replace('/dist', '')));
 		this.yawk.app.use(express(arena));
 	}

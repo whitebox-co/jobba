@@ -33,7 +33,7 @@ export default class Jobba {
 	private config: JobbaConfig;
 
 	constructor(config: JobbaConfig, ...registrars: Array<Registrar<Jobba>>) {
-		this.config = defaultsDeep(Jobba.defaultConfig, config);
+		this.config = defaultsDeep(config, Jobba.defaultConfig);
 		this.yawk = new Yawk(this.config.yawk);
 		this.tasks = new Map();
 

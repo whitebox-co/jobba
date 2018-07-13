@@ -1,17 +1,17 @@
 import * as Arena from 'bull-arena';
 import * as Bluebird from 'bluebird';
 import * as Bull from 'bull';
-import * as _ from 'lodash';
 import * as express from 'koa-express';
 import * as koaStatic from 'koa-static';
 import * as path from 'path';
 import Task, { TaskParams } from './task';
 import Yawk, { Registrar, YawkConfig } from 'yawk';
+import defaultsDeep from 'lodash/defaultsDeep';
 import routes from '../src/routes';
 import { Context } from 'koa';
 
 interface JobbaConfig {
-	api: YawkConfig;
+	yawk: YawkConfig;
 }
 
 export interface JobbaContext extends Context {
@@ -20,13 +20,21 @@ export interface JobbaContext extends Context {
 }
 
 export default class Jobba {
+	private static defaultConfig: Partial<JobbaConfig> = {
+		yawk: {
+			prefix: '/api',
+			init: false,
+		},
+	};
+
 	public yawk: Yawk;
 	public tasks: Map<string, Task>;
 
-	constructor(private config: JobbaConfig, ...registrars: Array<Registrar<Jobba>>) {
-		config.api.prefix = '/api';
-		config.api.init = false;
-		this.yawk = new Yawk(config.api);
+	private config: JobbaConfig;
+
+	constructor(config: JobbaConfig, ...registrars: Array<Registrar<Jobba>>) {
+		this.config = defaultsDeep(Jobba.defaultConfig, config);
+		this.yawk = new Yawk(this.config.yawk);
 		this.tasks = new Map();
 
 		this.init(registrars);

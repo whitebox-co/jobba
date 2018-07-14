@@ -59,7 +59,7 @@ export default class Jobba {
 		this.tasks.set(task.id, task);
 	}
 
-	public schedule(id: string, params: any, options?: Bull.JobOptions) {
+	public schedule(id: string, params?: any, options?: Bull.JobOptions) {
 		return this.getTask(id).schedule(params, options);
 	}
 

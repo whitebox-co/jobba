@@ -48,7 +48,7 @@ export default class Task implements TaskParams {
 		return toPromise((this.queue as any).getJobs(types, start, end, asc));
 	}
 
-	public schedule(params: any, options?: Bull.JobOptions) {
+	public schedule(params?: any, options?: Bull.JobOptions) {
 		return toPromise(this.queue.add(params, options));
 	}
 

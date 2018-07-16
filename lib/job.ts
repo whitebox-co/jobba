@@ -1,7 +1,8 @@
 import * as Bull from 'bull';
+import Task from './task';
 import { toPromise } from './utils';
 
-type LogLevel = 'debug' | 'error' | 'info' | 'warn';
+type LogLevel = 'debug' | 'error' | 'info' | 'log' | 'warn';
 interface Log {
 	level: LogLevel;
 	time: Date;
@@ -15,7 +16,7 @@ export default class Job {
 		logs: Array<Log>;
 	};
 
-	constructor(private job: Bull.Job) {
+	constructor(private task: Task, private job: Bull.Job) {
 		this.data = {
 			input: job.data,
 			output: undefined,
@@ -37,18 +38,20 @@ export default class Job {
 		return toPromise(this.job.update(this.data));
 	}
 
-	public log(level: LogLevel, ...body) {
+	public logger(level: LogLevel, ...body) {
 		const log: Log = {
 			level,
 			time: new Date(),
 			body,
 		};
-		console[log.level](log);
+		console[log.level](this.task.id, this.job.id, log);
 		this.data.logs.push(log);
 		return this.update();
 	}
-	public debug(...body) { return this.log('debug', ...body); }
-	public error(...body) { return this.log('error', ...body); }
-	public info(...body) { return this.log('info', ...body); }
-	public warn(...body) { return this.log('warn', ...body); }
+
+	public debug(...body) { return this.logger('debug', ...body); }
+	public error(...body) { return this.logger('error', ...body); }
+	public info(...body) { return this.logger('info', ...body); }
+	public log(...body) { return this.logger('log', ...body); }
+	public warn(...body) { return this.logger('warn', ...body); }
 }

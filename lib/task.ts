@@ -28,7 +28,11 @@ export default class Task implements TaskParams {
 		this.description = params.description;
 
 		this.queue = new Bull(this.id, params.options);
-		this.queue.process((bullJob: Bull.Job) => this.handler(new Job(bullJob)));
+		this.queue.process(async (bullJob: Bull.Job) => {
+			const job = new Job(bullJob);
+			await job.update();
+			return this.handler(job);
+		});
 	}
 
 	public getQueue(): Bull.Queue {
@@ -48,7 +52,7 @@ export default class Task implements TaskParams {
 		return toPromise((this.queue as any).getJobs(types, start, end, asc));
 	}
 
-	public schedule(params?: any, options?: Bull.JobOptions) {
+	public schedule(params?: object, options?: Bull.JobOptions) {
 		return toPromise(this.queue.add(params, options));
 	}
 

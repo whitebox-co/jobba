@@ -57,6 +57,7 @@ export default class Jobba {
 			task = new Task(params);
 		}
 		this.tasks.set(task.id, task);
+		return task;
 	}
 
 	public schedule(id: string, params?: object, options?: Bull.JobOptions) {

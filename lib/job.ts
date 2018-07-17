@@ -44,7 +44,7 @@ export default class Job {
 			time: new Date(),
 			body,
 		};
-		console[log.level](this.task.id, this.job.id, log);
+		console[log.level](this.task.id, this.job.id, ...log.body);
 		this.data.logs.push(log);
 		return this.update();
 	}

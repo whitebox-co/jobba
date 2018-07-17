@@ -11,6 +11,7 @@ interface Log {
 
 export default class Job {
 	private data: {
+		name: string;
 		input: any;
 		output: any;
 		logs: Array<Log>;
@@ -18,6 +19,7 @@ export default class Job {
 
 	constructor(private task: Task, private job: Bull.Job) {
 		this.data = {
+			name: (new Date()).toLocaleString(),
 			input: job.data,
 			output: undefined,
 			logs: [],

@@ -18,7 +18,7 @@
   "author": "Ross Hadden",
   "license": "ISC",
   "dependencies": {
-    "bull": "^3.4.2",
+    "bull": "^3.4.3",
     "bull-arena": "git+https://github.com/whitebox-co/arena.git#dev",
     "chalk": "^2.4.1",
     "joi": "^13.4.0",

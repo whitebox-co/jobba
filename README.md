@@ -35,6 +35,7 @@ function registrar(jobba: Jobba) {
 	jobba.register({
 		id: 'some-task',
 		handler: async (job: Job) => {
+			await job.log('The params passed to this job:', job.params);
 			return 'some response';
 		}
 	});

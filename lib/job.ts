@@ -1,4 +1,5 @@
 import * as Bull from 'bull';
+import * as _ from 'lodash';
 import Task from './task';
 import chalk from 'chalk';
 import { toPromise } from './utils';
@@ -19,18 +20,23 @@ const formats = {
 };
 
 export default class Job {
+	public params: any;
+	public state: any;
+
 	private data: {
 		name: string;
-		input: any;
-		output: any;
+		params: any;
+		state: any;
 		logs: Array<Log>;
 	};
 
 	constructor(private task: Task, private job: Bull.Job) {
+		this.params = job.data;
+
 		this.data = {
 			name: (new Date()).toLocaleString(),
-			input: job.data,
-			output: undefined,
+			params: _.cloneDeep(this.params),
+			state: undefined,
 			logs: [],
 		};
 	}
@@ -45,7 +51,8 @@ export default class Job {
 	public finished() { return toPromise(this.job.finished()); }
 
 	public update(value?: any) {
-		if (arguments.length) this.data.output = value;
+		if (arguments.length) this.state = value;
+		this.data.state = this.state;
 		return toPromise(this.job.update(this.data));
 	}
 

@@ -20,6 +20,7 @@
   "dependencies": {
     "bull": "^3.4.2",
     "bull-arena": "git+https://github.com/whitebox-co/arena.git#dev",
+    "chalk": "^2.4.1",
     "joi": "^13.4.0",
     "koa": "^2.5.2",
     "koa-bodyparser": "^4.2.1",

@@ -1,5 +1,6 @@
 import * as Bull from 'bull';
 import Task from './task';
+import chalk from 'chalk';
 import { toPromise } from './utils';
 
 type LogLevel = 'debug' | 'error' | 'info' | 'log' | 'warn';
@@ -8,6 +9,14 @@ interface Log {
 	time: Date;
 	body: Array<any>;
 }
+
+const formats = {
+	debug: chalk.bold.white,
+	error: chalk.bold.red,
+	info: chalk.bold.blue,
+	log: chalk.bold.green,
+	warn: chalk.bold.keyword('orange'),
+};
 
 export default class Job {
 	private data: {
@@ -46,7 +55,7 @@ export default class Job {
 			time: new Date(),
 			body,
 		};
-		console[log.level](this.task.id, this.job.id, ...log.body);
+		console[log.level](formats[log.level](`${this.task.id}:${this.job.id}`), ...log.body);
 		this.data.logs.push(log);
 		return this.update();
 	}

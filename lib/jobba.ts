@@ -73,7 +73,7 @@ export default class Jobba {
 	public async pauseAll() { for (const [ , task ] of this.tasks) await task.pause(); }
 	public async resumeAll() { for (const [ , task ] of this.tasks) await task.resume(); }
 
-	private init(registrars: Array<Registrar<Jobba>>) {
+	private async init(registrars: Array<Registrar<Jobba>>) {
 		console.log('Initializing Jobba...');
 		// TODO: make this middleware just for task routes
 		this.yawk.app.use((ctx: JobbaContext, next) => {
@@ -83,7 +83,7 @@ export default class Jobba {
 		this.yawk.init([ routes ]);
 
 		console.log('Initializing tasks...');
-		for (const registrar of registrars) registrar(this);
+		for (const registrar of registrars) await registrar(this);
 
 		console.log('Initializing UI...');
 		const queues = [];

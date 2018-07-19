@@ -62,8 +62,9 @@ export default class Job {
 			time: new Date(),
 			body,
 		};
-		const levelText = `[${formats[log.level](log.level.toUpperCase())}]`;
-		console[log.level](levelText, `${this.task.id}:${this.job.id}`, ...log.body);
+		const levelText = formats[log.level](`[${log.level.toUpperCase()}]`);
+		const hash = chalk.bold(`${this.task.id}:${this.job.id}`);
+		console[log.level](levelText, hash, ...log.body);
 		this.data.logs.push(log);
 		return this.update();
 	}

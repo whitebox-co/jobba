@@ -1,7 +1,7 @@
 import * as Arena from 'bull-arena';
 import * as Bluebird from 'bluebird';
 import * as Bull from 'bull';
-import * as defaultsDeep from 'lodash/defaultsDeep';
+import * as _ from 'lodash';
 import * as express from 'koa-express';
 import * as koaStatic from 'koa-static';
 import * as path from 'path';
@@ -33,7 +33,7 @@ export default class Jobba {
 	private config: JobbaConfig;
 
 	constructor(config: JobbaConfig, ...registrars: Array<Registrar<Jobba>>) {
-		this.config = defaultsDeep(config, Jobba.defaultConfig);
+		this.config = _.defaultsDeep(config, Jobba.defaultConfig);
 		this.yawk = new Yawk(this.config.yawk);
 		this.tasks = new Map();
 

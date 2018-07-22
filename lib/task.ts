@@ -31,7 +31,14 @@ export default class Task implements TaskParams {
 		this.queue.process(async (bullJob: Bull.Job) => {
 			const job = new Job(this, bullJob);
 			await job.update();
-			return this.handler(job);
+
+			let result;
+			try {
+				result = await this.handler(job);
+			} catch (ex) {
+				await job.throw(ex);
+			}
+			return result;
 		});
 	}
 

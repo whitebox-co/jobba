@@ -74,4 +74,10 @@ export default class Job {
 	public info(...body) { return this.logger('info', ...body); }
 	public log(...body) { return this.logger('log', ...body); }
 	public warn(...body) { return this.logger('warn', ...body); }
+
+	public async throw(ex) {
+		if (typeof ex !== 'object') ex = new Error(ex);
+		await this.error(ex);
+		throw ex;
+	}
 }

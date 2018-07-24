@@ -19,6 +19,16 @@ const formats = {
 	warn: chalk.bold.keyword('orange'),
 };
 
+class JobError extends Error {
+	toJSON() {
+		return {
+			name: this.name,
+			message: this.message,
+			stack: this.stack,
+		};
+	}
+}
+
 export default class Job {
 	public params: any;
 	public state: any;
@@ -76,7 +86,7 @@ export default class Job {
 	public warn(...body) { return this.logger('warn', ...body); }
 
 	public async throw(ex) {
-		if (typeof ex !== 'object') ex = new Error(ex);
+		if (typeof ex !== 'object') ex = new JobError(ex);
 		await this.error(ex);
 		throw ex;
 	}

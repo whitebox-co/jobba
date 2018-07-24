@@ -40,7 +40,7 @@ export default class Job {
 		logs: Array<Log>;
 	};
 
-	constructor(private task: Task, private job: Bull.Job) {
+	constructor(protected task: Task, protected job: Bull.Job) {
 		this.params = job.data;
 
 		this.data = {
@@ -49,6 +49,10 @@ export default class Job {
 			state: undefined,
 			logs: [],
 		};
+	}
+
+	public process(): any {
+		return this.throw('Job must implement method: process');
 	}
 
 	// Proxies

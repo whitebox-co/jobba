@@ -3,11 +3,9 @@ import * as _ from 'lodash';
 import Job from './job';
 import { toPromise } from './utils';
 
-type JobHandler = (job: Job) => Promise<any> | void;
-
 export interface TaskParams {
 	id: string;
-	handler: JobHandler;
+	Job: typeof Job;
 	name?: string;
 	description?: string;
 	options?: Bull.QueueOptions;
@@ -15,7 +13,7 @@ export interface TaskParams {
 
 export default class Task implements TaskParams {
 	public id: string;
-	public handler: JobHandler;
+	public Job: typeof Job;
 	public name: string;
 	public description: string;
 
@@ -23,18 +21,18 @@ export default class Task implements TaskParams {
 
 	constructor(params: TaskParams) {
 		this.id = params.id;
-		this.handler = params.handler;
 		this.name = params.name || _.capitalize(_.words(this.id).join(' '));
 		this.description = params.description;
+		this.Job = params.Job || Job;
 
 		this.queue = new Bull(this.id, params.options);
 		this.queue.process(async (bullJob: Bull.Job) => {
-			const job = new Job(this, bullJob);
+			const job = new this.Job(this, bullJob);
 			await job.update();
 
 			let result;
 			try {
-				result = await this.handler(job);
+				result = await job.process();
 			} catch (ex) {
 				await job.throw(ex);
 			}

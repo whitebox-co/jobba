@@ -60,7 +60,7 @@ export default class Job {
 		return this.throw('Job must implement method: process');
 	}
 
-	public logger(level: LogLevel, ...body) {
+	public async logger(level: LogLevel, ...body) {
 		const log: Log = {
 			level,
 			time: new Date(),
@@ -70,7 +70,7 @@ export default class Job {
 		const hash = chalk.bold(`${this.task.id}:${this.job.id}`);
 		console[log.level](levelText, hash, ...log.body);
 		this.data.logs.push(log);
-		return this.update();
+		await this.update();
 	}
 
 	public debug(...body) { return this.logger('debug', ...body); }

@@ -51,18 +51,11 @@ export default class Job {
 		};
 	}
 
+	public init(): any {}
+
 	public process(): any {
 		return this.throw('Job must implement method: process');
 	}
-
-	// Proxies
-	public progress(value: number) { return toPromise(this.job.progress(value)); }
-	public getState() { return toPromise(this.job.getState()); }
-	public remove() { return toPromise(this.job.remove()); }
-	public retry() { return toPromise(this.job.retry()); }
-	public discard() { return toPromise((this.job as any).discard()); }
-	public promote() { return toPromise(this.job.promote()); }
-	public finished() { return toPromise(this.job.finished()); }
 
 	public update(value?: any) {
 		if (arguments.length) this.state = value;
@@ -94,4 +87,13 @@ export default class Job {
 		await this.error(ex);
 		throw ex;
 	}
+
+	// Proxies
+	protected progress(value: number) { return toPromise(this.job.progress(value)); }
+	protected getState() { return toPromise(this.job.getState()); }
+	protected remove() { return toPromise(this.job.remove()); }
+	protected retry() { return toPromise(this.job.retry()); }
+	protected discard() { return toPromise((this.job as any).discard()); }
+	protected promote() { return toPromise(this.job.promote()); }
+	protected finished() { return toPromise(this.job.finished()); }
 }

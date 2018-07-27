@@ -1,6 +1,6 @@
 {
   "name": "jobba",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Jobba the Hub",
   "main": "dist/lib/index.js",
   "scripts": {
@@ -18,7 +18,7 @@
   "author": "Ross Hadden",
   "license": "ISC",
   "dependencies": {
-    "bull": "^3.4.3",
+    "bull": "^3.4.4",
     "bull-arena": "git+https://github.com/whitebox-co/arena.git#dev",
     "chalk": "^2.4.1",
     "joi": "^13.4.0",
@@ -31,14 +31,14 @@
     "yawk": "git+https://github.com/rosshadden/yawk.git"
   },
   "devDependencies": {
-    "@types/bluebird": "^3.5.22",
-    "@types/bull": "^3.3.14",
+    "@types/bluebird": "^3.5.23",
+    "@types/bull": "^3.3.17",
     "@types/joi": "^13.4.0",
     "@types/koa": "^2.0.46",
     "@types/koa-bodyparser": "^5.0.1",
     "@types/koa-router": "^7.0.30",
-    "@types/lodash": "^4.14.112",
-    "@types/node": "^10.5.2",
+    "@types/lodash": "^4.14.114",
+    "@types/node": "^10.5.3",
     "tslint": "^5.11.0",
     "typescript": "^2.9.2"
   }

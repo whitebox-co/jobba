@@ -51,16 +51,13 @@ export default class Job {
 		};
 	}
 
-	public init(): any {}
+	public init(): any {
+		// Initialize data
+		return this.update();
+	}
 
 	public process(): any {
 		return this.throw('Job must implement method: process');
-	}
-
-	public update(value?: any) {
-		if (arguments.length) this.state = value;
-		this.data.state = this.state;
-		return toPromise(this.job.update(this.data));
 	}
 
 	public logger(level: LogLevel, ...body) {
@@ -86,6 +83,12 @@ export default class Job {
 		if (typeof ex !== 'object') ex = new JobError(ex);
 		await this.error(ex);
 		throw ex;
+	}
+
+	protected update(value?: any) {
+		if (arguments.length) this.state = value;
+		this.data.state = this.state;
+		return toPromise(this.job.update(this.data));
 	}
 
 	// Proxies

@@ -9,7 +9,7 @@ type LogLevel = 'debug' | 'error' | 'info' | 'log' | 'warn';
 interface Log {
 	level: LogLevel;
 	time: Date;
-	body: Array<any>;
+	values: Array<any>;
 }
 
 const formats = {
@@ -20,14 +20,8 @@ const formats = {
 	warn: chalk.bold.keyword('orange'),
 };
 
-class JobError extends Error {
-	toJSON() {
-		return {
-			name: this.name,
-			message: this.message,
-			stack: this.stack,
-		};
-	}
+function errorToJson() {
+	return { name: this.name, message: this.message, stack: this.stack };
 }
 
 export default class Job {
@@ -62,27 +56,29 @@ export default class Job {
 		return this.throw('Job must implement method: process');
 	}
 
-	public async logger(level: LogLevel, ...body) {
+	public async logger(level: LogLevel, ...values) {
 		const log: Log = {
 			level,
 			time: new Date(),
-			body,
+			values: values.map((value) => {
+				if (value instanceof Error) (value as any).toJSON = errorToJson;
+				return value;
+			})
 		};
 		const levelText = formats[log.level](`[${log.level.toUpperCase()}]`);
 		const hash = chalk.bold(`${this.task.id}:${this.job.id}`);
-		console[log.level](levelText, hash, ...log.body);
+		console[log.level](levelText, hash, ...log.values);
 		this.data.logs.push(log);
 		await this.update();
 	}
 
-	public debug(...body) { return this.logger('debug', ...body); }
-	public error(...body) { return this.logger('error', ...body); }
-	public info(...body) { return this.logger('info', ...body); }
-	public log(...body) { return this.logger('log', ...body); }
-	public warn(...body) { return this.logger('warn', ...body); }
+	public debug(...values) { return this.logger('debug', ...values); }
+	public error(...values) { return this.logger('error', ...values); }
+	public info(...values) { return this.logger('info', ...values); }
+	public log(...values) { return this.logger('log', ...values); }
+	public warn(...values) { return this.logger('warn', ...values); }
 
 	public async throw(ex) {
-		if (typeof ex !== 'object') ex = new JobError(ex);
 		await this.error(ex);
 		throw ex;
 	}

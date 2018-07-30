@@ -56,6 +56,7 @@ export default class Jobba {
 		} else {
 			task = new Task(params);
 		}
+		task.jobba = this;
 		this.tasks.set(task.id, task);
 		return task;
 	}

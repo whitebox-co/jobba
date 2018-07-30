@@ -1,6 +1,7 @@
 import * as Bull from 'bull';
 import * as _ from 'lodash';
 import Job from './job';
+import Jobba from './jobba';
 import { toPromise } from './utils';
 
 export interface TaskParams {
@@ -16,6 +17,7 @@ export default class Task implements TaskParams {
 	public Job: typeof Job;
 	public name: string;
 	public description: string;
+	public jobba: Jobba;
 
 	private queue: Bull.Queue;
 
@@ -28,6 +30,7 @@ export default class Task implements TaskParams {
 		this.queue = new Bull(this.id, params.options);
 		this.queue.process(async (bullJob: Bull.Job) => {
 			const job = new this.Job(this, bullJob);
+			job.jobba = this.jobba;
 			let result;
 			try {
 				await job.init();

@@ -1,5 +1,6 @@
 import * as Bull from 'bull';
 import * as _ from 'lodash';
+import Jobba from './jobba';
 import Task from './task';
 import chalk from 'chalk';
 import { toPromise } from './utils';
@@ -30,6 +31,7 @@ class JobError extends Error {
 }
 
 export default class Job {
+	public jobba: Jobba;
 	public params: any;
 	public state: any;
 

@@ -29,6 +29,8 @@ export default class Job {
 	public params: any;
 	public state: any;
 
+	protected id: string;
+
 	private data: {
 		name: string;
 		params: any;
@@ -38,6 +40,7 @@ export default class Job {
 
 	constructor(protected task: Task, protected job: Bull.Job) {
 		this.params = job.data;
+		this.id = task.id;
 
 		this.data = {
 			name: (new Date()).toLocaleString(),

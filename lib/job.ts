@@ -51,13 +51,16 @@ export default class Job {
 		};
 	}
 
-	public init(): any {
-		// Initialize data
-		return this.update();
-	}
+	public init(): any {}
 
 	public process(): any {
 		return this.throw('Job must implement method: process');
+	}
+
+	public save(value?: any) {
+		if (arguments.length) this.state = value;
+		this.data.state = this.state;
+		return toPromise(this.job.update(this.data));
 	}
 
 	public async logger(level: LogLevel, ...values) {
@@ -73,7 +76,7 @@ export default class Job {
 		const hash = chalk.bold(`${this.task.id}:${this.job.id}`);
 		console[log.level](levelText, hash, ...log.values);
 		this.data.logs.push(log);
-		await this.update();
+		await this.save();
 	}
 
 	public debug(...values) { return this.logger('debug', ...values); }
@@ -85,12 +88,6 @@ export default class Job {
 	public async throw(ex) {
 		await this.error(ex);
 		throw ex;
-	}
-
-	protected update(value?: any) {
-		if (arguments.length) this.state = value;
-		this.data.state = this.state;
-		return toPromise(this.job.update(this.data));
 	}
 
 	// Proxies

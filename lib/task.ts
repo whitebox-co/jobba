@@ -33,6 +33,7 @@ export default class Task implements TaskParams {
 			job.jobba = this.jobba;
 			let result;
 			try {
+				await job.save();
 				await job.init();
 				result = await job.process();
 			} catch (ex) {

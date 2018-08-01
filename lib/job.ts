@@ -1,5 +1,6 @@
 import * as Bull from 'bull';
 import * as _ from 'lodash';
+import * as moment from 'moment';
 import Jobba from './jobba';
 import Task from './task';
 import chalk from 'chalk';
@@ -43,7 +44,7 @@ export default class Job {
 		this.id = task.id;
 
 		this.data = {
-			name: (new Date()).toLocaleString(),
+			name: moment().format('ddd MMM Mo, hh:mm:ss A'),
 			params: _.cloneDeep(this.params),
 			state: undefined,
 			logs: [],

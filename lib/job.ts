@@ -26,6 +26,14 @@ function errorToJson() {
 }
 
 export default class Job {
+	static isJobData(value: any) {
+		return typeof value.name === 'string'
+			&& typeof value.params === 'object'
+			&& Array.isArray(value.history)
+			&& Array.isArray(value.logs)
+		;
+	}
+
 	public jobba: Jobba;
 	public params: any;
 	public state: any;
@@ -37,18 +45,35 @@ export default class Job {
 		params: any;
 		state: any;
 		logs: Array<Log>;
+		history: Array<any>;
 	};
 
 	constructor(protected task: Task, protected job: Bull.Job) {
-		this.params = job.data;
 		this.id = task.id;
+		this.params = job.data;
 
 		this.data = {
 			name: moment().format('ddd MMM Mo, hh:mm:ss A'),
-			params: _.cloneDeep(this.params),
+			params: null,
 			state: undefined,
 			logs: [],
+			history: [],
 		};
+
+		// Store data from previous failed runs, and unroll params
+		if (Job.isJobData(this.params)) {
+			this.state = this.data.state = this.params.state;
+
+			this.data.logs = this.params.logs;
+			delete this.params.logs;
+
+			this.data.history = [ ...this.params.history, this.params ];
+			delete this.params.history;
+
+			this.params = this.params.params;
+		}
+
+		this.data.params = _.cloneDeep(this.params);
 	}
 
 	public init(): any {}

@@ -18,10 +18,10 @@
   "author": "Ross Hadden",
   "license": "ISC",
   "dependencies": {
-    "bull": "^3.4.4",
+    "bull": "^3.4.7",
     "bull-arena": "git+https://github.com/whitebox-co/arena.git#dev",
     "chalk": "^2.4.1",
-    "joi": "^13.5.2",
+    "joi": "^13.6.0",
     "koa": "^2.5.2",
     "koa-bodyparser": "^4.2.1",
     "koa-express": "^1.1.0",
@@ -34,14 +34,14 @@
   "devDependencies": {
     "@types/bluebird": "^3.5.23",
     "@types/bull": "^3.3.19",
-    "@types/joi": "^13.4.0",
+    "@types/joi": "^13.4.2",
     "@types/koa": "^2.0.46",
     "@types/koa-bodyparser": "^5.0.1",
     "@types/koa-router": "^7.0.31",
-    "@types/lodash": "^4.14.115",
+    "@types/lodash": "^4.14.116",
     "@types/moment": "^2.13.0",
-    "@types/node": "^10.5.5",
+    "@types/node": "^10.7.1",
     "tslint": "^5.11.0",
-    "typescript": "^2.9.2"
+    "typescript": "^3.0.1"
   }
 }

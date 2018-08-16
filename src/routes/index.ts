@@ -1,12 +1,12 @@
-import Server from 'yawk';
+import Yawk from 'yawk';
 import taskRoutes from './tasks';
 
-export default function(server: Server) {
-	server.register({
+export default function(yawk: Yawk) {
+	yawk.register({
 		path: '/',
 		description: 'Status check.',
 		handler: (ctx) => true,
 	});
 
-	taskRoutes(server);
+	taskRoutes(yawk);
 }

@@ -53,7 +53,7 @@ export default class Job {
 		this.params = job.data;
 
 		this.data = {
-			name: moment().format('ddd MMM Mo, hh:mm:ss A'),
+			name: moment().format('llll'),
 			params: null,
 			state: undefined,
 			logs: [],

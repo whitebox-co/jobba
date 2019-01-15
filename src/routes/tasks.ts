@@ -11,22 +11,33 @@ export default function(yawk: Yawk) {
 	});
 
 	yawk.register({
-		path: '/tasks/scheduled',
+		path: '/tasks/by-type',
 		private: true,
+		inputSchema: {
+			type: joi.string()
+				.required()
+				.valid('active', 'completed', 'delayed', 'failed', 'paused', 'waiting')
+			,
+			taskId: joi.string(),
+		},
 		handler: async (ctx: JobbaContext) => {
+			const { type, taskId }  = ctx.request.query;
+			const method = `get${type.charAt(0).toUpperCase()}${type.slice(1)}`;
 			const result = [];
+
 			for (const [ , task ] of ctx.jobba.tasks) {
-				const jobs = await task.getQueue().getDelayed();
+				if (taskId && task.id !== taskId) continue;
+				const jobs = await task.getQueue()[method]();
+
 				for (const job of jobs) {
-					result.push({
-						id: task.id,
-						name: task.name,
-						description: task.description,
-						cron: (job as any).opts.repeat.cron,
-						next: new Date((job as any).timestamp + (job as any).delay),
-						repeat: (job as any).opts.repeat,
-						input: job.data,
-					});
+					job.extra = {
+						taskId: task.id,
+						taskName: task.name,
+						taskDescription: task.description,
+					};
+					if (job.opts && job.opts.repeat) job.extra.cron = (job as any).opts.repeat.cron;
+					if (job.delay) job.extra.next = new Date((job as any).timestamp + (job as any).delay);
+					result.push(job);
 				}
 			}
 			return result;

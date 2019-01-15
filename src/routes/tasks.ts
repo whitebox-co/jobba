@@ -48,7 +48,7 @@ export default function(yawk: Yawk) {
 		path: '/tasks/:id',
 		private: true,
 		handler: async (ctx: JobbaContext) => {
-			return true;
+			return !!ctx.jobba.getTask(ctx.params.id);
 		},
 	});
 

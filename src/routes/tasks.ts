@@ -144,7 +144,7 @@ export default function(yawk: Yawk) {
 	});
 
 	yawk.register({
-		path: '/tasks/:id/get-jobs',
+		path: '/tasks/:id/jobs',
 		inputSchema: {
 			types: joi.array().items(joi.string()),
 			type: joi.string(),
@@ -161,7 +161,7 @@ export default function(yawk: Yawk) {
 	});
 
 	yawk.register({
-		path: '/tasks/:id/get-job',
+		path: '/tasks/:id/job',
 		inputSchema: {
 			jobId: joi.string().required(),
 		},

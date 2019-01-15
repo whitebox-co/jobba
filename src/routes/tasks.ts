@@ -144,18 +144,7 @@ export default function(yawk: Yawk) {
 	});
 
 	yawk.register({
-		path: '/tasks/:id/getJob',
-		inputSchema: {
-			jobId: joi.string(),
-		},
-		handler: (ctx: JobbaContext) => {
-			const { jobId } = ctx.request.query;
-			return ctx.task.getJob(jobId);
-		},
-	});
-
-	yawk.register({
-		path: '/tasks/:id/getJobs',
+		path: '/tasks/:id/get-jobs',
 		inputSchema: {
 			types: joi.array().items(joi.string()),
 			start: joi.number(),
@@ -165,6 +154,17 @@ export default function(yawk: Yawk) {
 		handler: (ctx: JobbaContext) => {
 			const { types, start, end, asc } = ctx.request.query;
 			return ctx.task.getJobs(types, start, end, asc);
+		},
+	});
+
+	yawk.register({
+		path: '/tasks/:id/get-job',
+		inputSchema: {
+			jobId: joi.string().required(),
+		},
+		handler: (ctx: JobbaContext) => {
+			const { jobId } = ctx.request.query;
+			return ctx.task.getJob(jobId);
 		},
 	});
 }

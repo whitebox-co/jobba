@@ -1,6 +1,6 @@
 {
   "name": "jobba",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "Jobba the Hub",
   "main": "dist/lib/index.js",
   "scripts": {

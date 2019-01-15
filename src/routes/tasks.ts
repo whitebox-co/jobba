@@ -147,12 +147,15 @@ export default function(yawk: Yawk) {
 		path: '/tasks/:id/get-jobs',
 		inputSchema: {
 			types: joi.array().items(joi.string()),
+			type: joi.string(),
 			start: joi.number(),
 			end: joi.number(),
 			asc: joi.boolean(),
 		},
 		handler: (ctx: JobbaContext) => {
-			const { types, start, end, asc } = ctx.request.query;
+			const { asc, end, start, type } = ctx.request.query;
+			let { types } = ctx.request.query;
+			if (type && !types) types = [ types ];
 			return ctx.task.getJobs(types, start, end, asc);
 		},
 	});

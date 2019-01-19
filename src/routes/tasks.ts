@@ -154,8 +154,7 @@ export default function(yawk: Yawk) {
 		handler: async (ctx: JobbaContext) => {
 			const { begin, end, limit, type } = ctx.request.query;
 			let { asc, types } = ctx.request.query;
-			asc = ![ false, 'false', 0, '0' ].includes(asc);
-			console.log('asc', asc);
+			asc = (typeof asc !== 'undefined') && ![ false, 'false', 0, '0' ].includes(asc);
 			if (type && !types) types = [ type ];
 			const jobs = await ctx.task.getJobs(types, begin, end, asc);
 			return jobs.slice(0, limit);

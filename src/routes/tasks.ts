@@ -153,7 +153,7 @@ export default function(yawk: Yawk) {
 		handler: (ctx: JobbaContext) => {
 			const { asc, end, start, type } = ctx.request.query;
 			let { types } = ctx.request.query;
-			if (type && !types) types = [ types ];
+			if (type && !types) types = [ type ];
 			return ctx.task.getJobs(types, start, end, asc);
 		},
 	});

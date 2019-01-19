@@ -152,8 +152,10 @@ export default function(yawk: Yawk) {
 			limit: joi.number(),
 		},
 		handler: async (ctx: JobbaContext) => {
-			const { asc, begin, end, limit, type } = ctx.request.query;
-			let { types } = ctx.request.query;
+			const { begin, end, limit, type } = ctx.request.query;
+			let { asc, types } = ctx.request.query;
+			asc = ![ false, 'false', 0, '0' ].includes(asc);
+			console.log('asc', asc);
 			if (type && !types) types = [ type ];
 			const jobs = await ctx.task.getJobs(types, begin, end, asc);
 			return jobs.slice(0, limit);

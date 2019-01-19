@@ -146,16 +146,16 @@ export default function(yawk: Yawk) {
 		inputSchema: {
 			types: joi.array().items(joi.string()),
 			type: joi.string(),
-			start: joi.number(),
+			begin: joi.number(),
 			end: joi.number(),
 			asc: joi.boolean(),
 			limit: joi.number(),
 		},
 		handler: async (ctx: JobbaContext) => {
-			const { asc, end, limit, start, type } = ctx.request.query;
+			const { asc, begin, end, limit, type } = ctx.request.query;
 			let { types } = ctx.request.query;
 			if (type && !types) types = [ type ];
-			const jobs = await ctx.task.getJobs(types, start, end, asc);
+			const jobs = await ctx.task.getJobs(types, begin, end, asc);
 			return jobs.slice(0, limit);
 		},
 	});

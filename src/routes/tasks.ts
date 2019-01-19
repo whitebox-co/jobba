@@ -12,7 +12,6 @@ export default function(yawk: Yawk) {
 
 	yawk.register({
 		path: '/tasks/by-type',
-		private: true,
 		inputSchema: {
 			type: joi.string()
 				.required()
@@ -46,7 +45,6 @@ export default function(yawk: Yawk) {
 
 	yawk.register({
 		path: '/tasks/:id',
-		private: true,
 		handler: async (ctx: JobbaContext) => {
 			return !!ctx.jobba.getTask(ctx.params.id);
 		},

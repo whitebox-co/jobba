@@ -149,12 +149,14 @@ export default function(yawk: Yawk) {
 			start: joi.number(),
 			end: joi.number(),
 			asc: joi.boolean(),
+			limit: joi.number(),
 		},
-		handler: (ctx: JobbaContext) => {
-			const { asc, end, start, type } = ctx.request.query;
+		handler: async (ctx: JobbaContext) => {
+			const { asc, end, limit, start, type } = ctx.request.query;
 			let { types } = ctx.request.query;
 			if (type && !types) types = [ type ];
-			return ctx.task.getJobs(types, start, end, asc);
+			const jobs = await ctx.task.getJobs(types, start, end, asc);
+			return jobs.slice(0, limit);
 		},
 	});
 

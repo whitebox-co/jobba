@@ -158,16 +158,20 @@ export default function(yawk: Yawk) {
 			let { asc, types } = ctx.input;
 			asc = (typeof asc !== 'undefined') && ![ false, 'false', 0, '0' ].includes(asc);
 			if (type && !types) types = [ type ];
-			const jobs = await ctx.task.getJobs(types, begin, end);
+
+			let results = await ctx.task.getJobs(types, begin, end);
 
 			// sort
-			let results = _.sortBy(jobs, 'id');
+			results = _.sortBy(results, 'id');
 			if (!asc) results.reverse();
+
+			// limit
+			results = results.slice(0, limit);
 
 			// filter
 			if (filter) results = _.filter(results, filter);
 
-			return results.slice(0, limit);
+			return results;
 		},
 	});
 

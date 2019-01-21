@@ -5,7 +5,8 @@ import Yawk, { Method } from 'yawk';
 
 export default function(yawk: Yawk) {
 	yawk.register({
-		path: '/',
+		path: '/tasks',
+		description: 'List all registered tasks.',
 		handler: (ctx: JobbaContext) => {
 			return ctx.jobba.list();
 		},
@@ -45,25 +46,32 @@ export default function(yawk: Yawk) {
 	});
 
 	yawk.register({
-		path: '/:id',
+		path: '/task',
+		inputSchema: {
+			taskId: joi.string().required(),
+		},
 		handler: async (ctx: JobbaContext) => {
-			return !!ctx.jobba.getTask(ctx.params.id);
+			return !!ctx.jobba.getTask(ctx.input.taskId);
 		},
 	});
 
 	yawk.register({
-		path: '/:id/*',
+		path: '/task/*',
 		method: Method.All,
+		inputSchema: {
+			taskId: joi.string().required(),
+		},
 		handler: (ctx: JobbaContext, next) => {
-			ctx.task = ctx.jobba.getTask(ctx.params.id);
+			ctx.task = ctx.jobba.getTask(ctx.input.taskId);
 			return next();
 		},
 	});
 
 	yawk.register({
-		path: '/:id/schedule',
+		path: '/task/schedule',
 		method: Method.Post,
 		inputSchema: {
+			taskId: joi.string().required(),
 			params: joi.any(),
 			options: {
 				priority: joi.number(),
@@ -99,52 +107,68 @@ export default function(yawk: Yawk) {
 			},
 		},
 		handler: (ctx: JobbaContext) => {
-			const { params, options } = ctx.input as any;
-			return ctx.jobba.schedule(ctx.params.id, params, options);
+			const { options, params, taskId } = ctx.input as any;
+			return ctx.jobba.schedule(taskId, params, options);
 		},
 	});
 
 	yawk.register({
-		path: '/:id/pause',
+		path: '/task/pause',
 		method: Method.Post,
+		inputSchema: {
+			taskId: joi.string().required(),
+		},
 		handler: (ctx: JobbaContext) => {
 			return ctx.task.pause();
 		},
 	});
 
 	yawk.register({
-		path: '/:id/resume',
+		path: '/task/resume',
+		inputSchema: {
+			taskId: joi.string().required(),
+		},
 		handler: (ctx: JobbaContext) => {
 			return ctx.task.resume();
 		},
 	});
 
 	yawk.register({
-		path: '/:id/count',
+		path: '/task/count',
+		inputSchema: {
+			taskId: joi.string().required(),
+		},
 		handler: (ctx: JobbaContext) => {
 			return ctx.task.count();
 		},
 	});
 
 	yawk.register({
-		path: '/:id/empty',
+		path: '/task/empty',
 		method: Method.Post,
+		inputSchema: {
+			taskId: joi.string().required(),
+		},
 		handler: (ctx: JobbaContext) => {
 			return ctx.task.empty();
 		},
 	});
 
 	yawk.register({
-		path: '/:id/close',
+		path: '/task/close',
 		method: Method.Post,
+		inputSchema: {
+			taskId: joi.string().required(),
+		},
 		handler: (ctx: JobbaContext) => {
 			return ctx.task.close();
 		},
 	});
 
 	yawk.register({
-		path: '/:id/jobs',
+		path: '/task/jobs',
 		inputSchema: {
+			taskId: joi.string().required(),
 			types: joi.array().items(joi.string()),
 			type: joi.string(),
 			begin: joi.number(),
@@ -154,10 +178,10 @@ export default function(yawk: Yawk) {
 			filter: joi.object(),
 		},
 		handler: async (ctx: JobbaContext) => {
-			const { begin, end, filter, limit, type } = ctx.input;
+			const { begin, end, filter, limit } = ctx.input;
 			let { asc, types } = ctx.input;
 			asc = (typeof asc !== 'undefined') && ![ false, 'false', 0, '0' ].includes(asc);
-			if (type && !types) types = [ type ];
+			if (ctx.input.type && !types) types = [ ctx.input.type ];
 
 			let results = await ctx.task.getJobs(types, begin, end);
 
@@ -176,8 +200,9 @@ export default function(yawk: Yawk) {
 	});
 
 	yawk.register({
-		path: '/:id/job',
+		path: '/task/job',
 		inputSchema: {
+			taskId: joi.string().required(),
 			jobId: joi.string().required(),
 		},
 		handler: (ctx: JobbaContext) => {

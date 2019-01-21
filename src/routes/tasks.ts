@@ -151,15 +151,22 @@ export default function(yawk: Yawk) {
 			end: joi.number(),
 			asc: joi.boolean(),
 			limit: joi.number(),
+			filter: joi.object(),
 		},
 		handler: async (ctx: JobbaContext) => {
-			const { begin, end, limit, type } = ctx.input;
+			const { begin, end, filter, limit, type } = ctx.input;
 			let { asc, types } = ctx.input;
 			asc = (typeof asc !== 'undefined') && ![ false, 'false', 0, '0' ].includes(asc);
 			if (type && !types) types = [ type ];
 			const jobs = await ctx.task.getJobs(types, begin, end);
-			const results = _.sortBy(jobs, 'id');
+
+			// sort
+			let results = _.sortBy(jobs, 'id');
 			if (!asc) results.reverse();
+
+			// filter
+			if (filter) results = _.filter(results, filter);
+
 			return results.slice(0, limit);
 		},
 	});

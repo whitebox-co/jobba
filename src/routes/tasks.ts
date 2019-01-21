@@ -21,7 +21,7 @@ export default function(yawk: Yawk) {
 			taskId: joi.string(),
 		},
 		handler: async (ctx: JobbaContext) => {
-			const { type, taskId }  = ctx.request.query;
+			const { type, taskId }  = ctx.input;
 			const method = `get${type.charAt(0).toUpperCase()}${type.slice(1)}`;
 			const result = [];
 
@@ -99,7 +99,7 @@ export default function(yawk: Yawk) {
 			},
 		},
 		handler: (ctx: JobbaContext) => {
-			const { params, options } = ctx.request.body as any;
+			const { params, options } = ctx.input as any;
 			return ctx.jobba.schedule(ctx.params.id, params, options);
 		},
 	});
@@ -153,8 +153,8 @@ export default function(yawk: Yawk) {
 			limit: joi.number(),
 		},
 		handler: async (ctx: JobbaContext) => {
-			const { begin, end, limit, type } = ctx.request.query;
-			let { asc, types } = ctx.request.query;
+			const { begin, end, limit, type } = ctx.input;
+			let { asc, types } = ctx.input;
 			asc = (typeof asc !== 'undefined') && ![ false, 'false', 0, '0' ].includes(asc);
 			if (type && !types) types = [ type ];
 			const jobs = await ctx.task.getJobs(types, begin, end);
@@ -170,7 +170,7 @@ export default function(yawk: Yawk) {
 			jobId: joi.string().required(),
 		},
 		handler: (ctx: JobbaContext) => {
-			const { jobId } = ctx.request.query;
+			const { jobId } = ctx.input;
 			return ctx.task.getJob(jobId);
 		},
 	});

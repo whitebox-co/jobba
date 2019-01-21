@@ -1,3 +1,4 @@
+import * as _ from 'lodash';
 import * as joi from 'joi';
 import Jobba, { JobbaContext, Task } from '../../lib';
 import Yawk, { Method } from 'yawk';
@@ -156,8 +157,10 @@ export default function(yawk: Yawk) {
 			let { asc, types } = ctx.request.query;
 			asc = (typeof asc !== 'undefined') && ![ false, 'false', 0, '0' ].includes(asc);
 			if (type && !types) types = [ type ];
-			const jobs = await ctx.task.getJobs(types, begin, end, asc);
-			return jobs.slice(0, limit);
+			const jobs = await ctx.task.getJobs(types, begin, end);
+			const results = _.sortBy(jobs, 'id');
+			if (!asc) results.reverse();
+			return results.slice(0, limit);
 		},
 	});
 

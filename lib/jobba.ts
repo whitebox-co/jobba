@@ -87,12 +87,8 @@ export default class Jobba {
 		for (const registrar of registrars) await registrar(this);
 
 		console.log('Initializing UI...');
-		const queues = [];
-		for (const task of this.tasks.values()) {
-			queues.push({ name: task.id, hostId: task.name });
-		}
 		const arena = new Arena({
-			queues
+			queues: [ ...this.tasks.values() ].map((task) => ({ name: task.id, hostId: task.name }))
 		}, {
 			disableListen: true,
 			useCdn: false,

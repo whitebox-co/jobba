@@ -1,18 +1,18 @@
 import * as _ from 'lodash';
 import * as joi from 'joi';
-import Jobba, { JobbaContext, Task } from '../../lib';
+import Jobba, { JobbaContext, Task } from '../lib';
 import Yawk, { Method } from 'yawk';
 
 export default function(yawk: Yawk) {
 	yawk.register({
-		path: '/tasks',
+		path: '/',
 		handler: (ctx: JobbaContext) => {
 			return ctx.jobba.list();
 		},
 	});
 
 	yawk.register({
-		path: '/tasks/by-type',
+		path: '/by-type',
 		inputSchema: {
 			type: joi.string()
 				.required()
@@ -45,14 +45,14 @@ export default function(yawk: Yawk) {
 	});
 
 	yawk.register({
-		path: '/tasks/:id',
+		path: '/:id',
 		handler: async (ctx: JobbaContext) => {
 			return !!ctx.jobba.getTask(ctx.params.id);
 		},
 	});
 
 	yawk.register({
-		path: '/tasks/:id/*',
+		path: '/:id/*',
 		method: Method.All,
 		handler: (ctx: JobbaContext, next) => {
 			ctx.task = ctx.jobba.getTask(ctx.params.id);
@@ -61,7 +61,7 @@ export default function(yawk: Yawk) {
 	});
 
 	yawk.register({
-		path: '/tasks/:id/schedule',
+		path: '/:id/schedule',
 		method: Method.Post,
 		inputSchema: {
 			params: joi.any(),
@@ -105,7 +105,7 @@ export default function(yawk: Yawk) {
 	});
 
 	yawk.register({
-		path: '/tasks/:id/pause',
+		path: '/:id/pause',
 		method: Method.Post,
 		handler: (ctx: JobbaContext) => {
 			return ctx.task.pause();
@@ -113,21 +113,21 @@ export default function(yawk: Yawk) {
 	});
 
 	yawk.register({
-		path: '/tasks/:id/resume',
+		path: '/:id/resume',
 		handler: (ctx: JobbaContext) => {
 			return ctx.task.resume();
 		},
 	});
 
 	yawk.register({
-		path: '/tasks/:id/count',
+		path: '/:id/count',
 		handler: (ctx: JobbaContext) => {
 			return ctx.task.count();
 		},
 	});
 
 	yawk.register({
-		path: '/tasks/:id/empty',
+		path: '/:id/empty',
 		method: Method.Post,
 		handler: (ctx: JobbaContext) => {
 			return ctx.task.empty();
@@ -135,7 +135,7 @@ export default function(yawk: Yawk) {
 	});
 
 	yawk.register({
-		path: '/tasks/:id/close',
+		path: '/:id/close',
 		method: Method.Post,
 		handler: (ctx: JobbaContext) => {
 			return ctx.task.close();
@@ -143,7 +143,7 @@ export default function(yawk: Yawk) {
 	});
 
 	yawk.register({
-		path: '/tasks/:id/jobs',
+		path: '/:id/jobs',
 		inputSchema: {
 			types: joi.array().items(joi.string()),
 			type: joi.string(),
@@ -176,7 +176,7 @@ export default function(yawk: Yawk) {
 	});
 
 	yawk.register({
-		path: '/tasks/:id/job',
+		path: '/:id/job',
 		inputSchema: {
 			jobId: joi.string().required(),
 		},

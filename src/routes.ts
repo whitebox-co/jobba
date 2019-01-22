@@ -58,11 +58,8 @@ export default function(yawk: Yawk) {
 	yawk.register({
 		path: '/task/*',
 		method: Method.All,
-		inputSchema: {
-			taskId: joi.string().required(),
-		},
 		handler: (ctx: JobbaContext, next) => {
-			ctx.task = ctx.jobba.getTask(ctx.input.taskId);
+			if (ctx.input.taskId) ctx.task = ctx.jobba.getTask(ctx.input.taskId);
 			return next();
 		},
 	});

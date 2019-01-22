@@ -37,6 +37,7 @@ export default class Job {
 	public jobba: Jobba;
 	public params: any;
 	public state: any;
+	public status: any;
 
 	protected id: string;
 
@@ -115,9 +116,13 @@ export default class Job {
 		throw ex;
 	}
 
+	public async fillStatus() {
+		this.status = await this.getStatus();
+	}
+
 	// Proxies
+	public getStatus() { return toPromise(this.job.getState()); }
 	protected progress(value: number) { return toPromise(this.job.progress(value)); }
-	protected getState() { return toPromise(this.job.getState()); }
 	protected remove() { return toPromise(this.job.remove()); }
 	protected retry() { return toPromise(this.job.retry()); }
 	protected discard() { return toPromise((this.job as any).discard()); }

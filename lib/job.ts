@@ -39,7 +39,8 @@ export default class Job {
 	public state: any;
 	public status: any;
 
-	protected id: string;
+	protected id: Bull.JobId;
+	protected taskId: string;
 
 	private data: {
 		name: string;
@@ -50,7 +51,8 @@ export default class Job {
 	};
 
 	constructor(protected task: Task, protected job: Bull.Job) {
-		this.id = task.id;
+		this.id = job.id;
+		this.taskId = task.id;
 		this.params = job.data;
 
 		this.data = {

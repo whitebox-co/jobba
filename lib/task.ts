@@ -47,17 +47,19 @@ export default class Task implements TaskParams {
 		return this.queue;
 	}
 
-	public getJob(jobId): Promise<Bull.Job> {
-		return toPromise(this.queue.getJob(jobId));
+	public async getJob(jobId): Promise<Job> {
+		const bullJob = await toPromise(this.queue.getJob(jobId));
+		return new this.Job(this, bullJob);
 	}
 
-	public getJobs(
+	public async getJobs(
 		types: Array<string>,
 		start?: number,
 		end?: number,
 		asc?: boolean
-	): Promise<Array<Bull.Job>> {
-		return toPromise((this.queue as any).getJobs(types, start, end, asc));
+	): Promise<Array<Job>> {
+		const bullJobs = await toPromise((this.queue as any).getJobs(types, start, end, asc));
+		return bullJobs.map((bullJob) => new this.Job(this, bullJob));
 	}
 
 	public schedule(params?: object, options?: Bull.JobOptions) {

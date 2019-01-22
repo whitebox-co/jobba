@@ -173,9 +173,10 @@ export default function(yawk: Yawk) {
 			asc: joi.boolean(),
 			limit: joi.number(),
 			filter: joi.object(),
+			addStatus: joi.boolean().description('Optionally annotate jobs with their current status.'),
 		},
 		handler: async (ctx: JobbaContext) => {
-			const { begin, end, filter, limit } = ctx.input;
+			const { addStatus, begin, end, filter, limit } = ctx.input;
 			let { asc, types } = ctx.input;
 			asc = (typeof asc !== 'undefined') && ![ false, 'false', 0, '0' ].includes(asc);
 			if (ctx.input.type && !types) types = [ ctx.input.type ];
@@ -191,6 +192,13 @@ export default function(yawk: Yawk) {
 
 			// filter
 			if (filter) results = _.filter(results, filter);
+
+			// annotate jobs with current status
+			if (!!addStatus) {
+				for (const result of results) {
+					await result.fillStatus();
+				}
+			}
 
 			return results;
 		},

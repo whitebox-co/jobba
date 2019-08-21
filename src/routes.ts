@@ -194,7 +194,7 @@ export default function(yawk: Yawk) {
 			if (filter) results = _.filter(results, filter);
 
 			// annotate jobs with current status
-			if (!!addStatus) {
+			if (addStatus) {
 				for (const result of results) {
 					await result.fillStatus();
 				}

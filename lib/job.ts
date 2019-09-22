@@ -26,7 +26,9 @@ function errorToJson() {
 }
 
 export default class Job {
-	static isJobData(value: any) {
+	public static serializedKeys = [ 'id', 'taskId', 'status', 'params', 'data', 'job' ];
+
+	public static isJobData(value: any) {
 		return typeof value.name === 'string'
 			&& typeof value.params === 'object'
 			&& Array.isArray(value.history)
@@ -37,8 +39,10 @@ export default class Job {
 	public jobba: Jobba;
 	public params: any;
 	public state: any;
+	public status: any;
 
-	protected id: string;
+	protected id: Bull.JobId;
+	protected taskId: string;
 
 	private data: {
 		name: string;
@@ -49,7 +53,8 @@ export default class Job {
 	};
 
 	constructor(protected task: Task, protected job: Bull.Job) {
-		this.id = task.id;
+		this.id = job.id;
+		this.taskId = task.id;
 		this.params = job.data;
 
 		this.data = {
@@ -115,12 +120,25 @@ export default class Job {
 		throw ex;
 	}
 
+	public async fillStatus() {
+		this.status = await this.getStatus();
+	}
+
 	// Proxies
+	public getStatus() { return toPromise(this.job.getState()); }
 	protected progress(value: number) { return toPromise(this.job.progress(value)); }
-	protected getState() { return toPromise(this.job.getState()); }
 	protected remove() { return toPromise(this.job.remove()); }
 	protected retry() { return toPromise(this.job.retry()); }
 	protected discard() { return toPromise((this.job as any).discard()); }
 	protected promote() { return toPromise(this.job.promote()); }
 	protected finished() { return toPromise(this.job.finished()); }
+
+	private toJSON() {
+		const result = {};
+		for (const key of Job.serializedKeys) {
+			if (key === 'task') continue;
+			result[key] = this[key];
+		}
+		return result;
+	}
 }

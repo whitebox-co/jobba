@@ -1,6 +1,6 @@
 {
   "name": "jobba",
-  "version": "0.7.1",
+  "version": "0.7.2",
   "description": "Jobba the Hub",
   "main": "dist/lib/index.js",
   "scripts": {
@@ -48,5 +48,12 @@
     "tslint": "^5.20.0",
     "typescript": "^3.6.3"
   },
+  "files": [
+    "/*.json",
+    "/.editorconfig",
+    "/dist",
+    "/lib",
+    "/src"
+  ],
   "types": "dist/lib/index.d.ts"
 }

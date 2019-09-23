@@ -1,7 +1,7 @@
 import * as Bull from 'bull';
 import * as _ from 'lodash';
-import Job from './job';
-import Jobba from './jobba';
+import { Job } from './job';
+import { Jobba } from './jobba';
 import { toPromise } from './utils';
 
 export interface TaskParams {
@@ -12,7 +12,7 @@ export interface TaskParams {
 	options?: Bull.QueueOptions;
 }
 
-export default class Task implements TaskParams {
+export class Task implements TaskParams {
 	public id: string;
 	public Job: typeof Job;
 	public name: string;

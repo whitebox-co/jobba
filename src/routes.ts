@@ -1,9 +1,9 @@
 import * as _ from 'lodash';
 import * as joi from 'joi';
-import Jobba, { JobbaContext, Task } from '../lib';
 import Yawk, { Method } from 'yawk';
+import { Jobba, JobbaContext, Task } from '../lib';
 
-export default function(yawk: Yawk) {
+export function routes(yawk: Yawk) {
 	yawk.register({
 		path: '/tasks',
 		description: 'List all registered tasks.',

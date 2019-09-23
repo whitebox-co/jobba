@@ -5,10 +5,10 @@ import * as _ from 'lodash';
 import * as express from 'koa-express';
 import * as koaStatic from 'koa-static';
 import * as path from 'path';
-import Task, { TaskParams } from './task';
 import Yawk, { Registrar, YawkConfig } from 'yawk';
-import routes from '../src/routes';
 import { Context } from 'koa';
+import { Task, TaskParams } from './task';
+import { routes } from '../src/routes';
 
 export interface JobbaConfig {
 	yawk: YawkConfig;
@@ -19,7 +19,7 @@ export interface JobbaContext extends Context {
 	task?: Task;
 }
 
-export default class Jobba {
+export class Jobba {
 	private static defaultConfig: Partial<JobbaConfig> = {
 		yawk: {
 			prefix: '/api',

@@ -44,7 +44,7 @@ export default class Job {
 	protected id: Bull.JobId;
 	protected taskId: string;
 
-	private data: {
+	protected data: {
 		name: string;
 		params: any;
 		state: any;
@@ -133,7 +133,7 @@ export default class Job {
 	protected promote() { return toPromise(this.job.promote()); }
 	protected finished() { return toPromise(this.job.finished()); }
 
-	private toJSON() {
+	protected toJSON() {
 		const result = {};
 		for (const key of Job.serializedKeys) {
 			if (key === 'task') continue;

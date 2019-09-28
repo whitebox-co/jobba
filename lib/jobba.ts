@@ -1,11 +1,11 @@
-import * as Arena from 'bull-arena';
 import * as Bluebird from 'bluebird';
 import * as Bull from 'bull';
 import * as _ from 'lodash';
-import * as express from 'koa-express';
-import * as koaStatic from 'koa-static';
 import * as path from 'path';
+import Arena from 'bull-arena';
 import Yawk, { Registrar, YawkConfig } from 'yawk';
+import express from 'koa-express';
+import koaStatic from 'koa-static';
 import { Context } from 'koa';
 import { Task, TaskParams } from './task';
 import { routes } from '../src/routes';

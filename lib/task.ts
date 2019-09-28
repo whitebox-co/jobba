@@ -1,5 +1,5 @@
-import * as Bull from 'bull';
 import * as _ from 'lodash';
+import Bull from 'bull';
 import { Job } from './job';
 import { Jobba } from './jobba';
 import { toPromise } from './utils';

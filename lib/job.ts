@@ -1,7 +1,7 @@
 import * as Bull from 'bull';
 import * as _ from 'lodash';
-import * as moment from 'moment';
 import chalk from 'chalk';
+import moment from 'moment';
 import { Jobba } from './jobba';
 import { Task } from './task';
 import { toPromise } from './utils';

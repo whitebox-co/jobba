@@ -7,7 +7,7 @@ import Yawk, { Registrar, YawkConfig } from 'yawk';
 import express from 'koa-express';
 import koaStatic from 'koa-static';
 import resolvers from '../src/resolvers';
-import { ApolloServer } from 'apollo-server';
+import { ApolloServer } from 'apollo-server-koa';
 import { Context as KoaContext } from 'koa';
 import { Context } from 'apollo-server-core';
 import { Task, TaskParams } from './task';
@@ -64,9 +64,6 @@ export class Jobba {
 	}
 
 	public async start() {
-		const { url } = await this.server.listen({ port: 3001 });
-		console.log(`🚀  Server ready at ${url}`);
-
 		this.yawk.start();
 	}
 
@@ -115,6 +112,10 @@ export class Jobba {
 			disableListen: true,
 			useCdn: false,
 		});
+
+		// Mount graphql server
+		this.server.applyMiddleware({ app: this.yawk.app });
+
 		// Make UI work in both normal and linked dev environments, respectively
 		this.yawk.app.use(koaStatic(path.join(__dirname, '../../..', 'bull-arena/public').replace('/dist', '')));
 		this.yawk.app.use(koaStatic(path.join(__dirname, '..', 'node_modules/bull-arena/public').replace('/dist', '')));

@@ -22,7 +22,7 @@
   "author": "Ross Hadden",
   "license": "ISC",
   "dependencies": {
-    "apollo-server": "^2.9.4",
+    "apollo-server-koa": "^2.9.4",
     "bull": "^3.11.0",
     "bull-arena": "git+https://github.com/whitebox-co/arena.git#dev",
     "chalk": "^2.4.2",

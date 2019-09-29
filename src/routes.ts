@@ -122,6 +122,7 @@ export function routes(yawk: Yawk) {
 
 	yawk.register({
 		path: '/task/resume',
+		method: Method.Post,
 		inputSchema: {
 			taskId: joi.string().required(),
 		},

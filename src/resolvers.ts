@@ -11,5 +11,9 @@ export default {
 		tasks: (parent, args, ctx: JobbaContext) => {
 			return ctx.jobba.tasks.values();
 		},
+
+		task: (parent, args, ctx: JobbaContext) => {
+			return ctx.jobba.getTask(args.taskId);
+		},
 	},
 };

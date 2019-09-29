@@ -1,3 +1,6 @@
+scalar JSON
+scalar JSONObject
+
 type Task {
 	"Unique id of the task."
 	id: String!
@@ -21,4 +24,7 @@ type Query {
 
 	"Get all registered tasks."
 	tasks: [Task]
+
+	"Get a single task."
+	task(taskId: String!): Task
 }

@@ -27,4 +27,7 @@ type Query {
 
 	"Get a single task."
 	task(taskId: String!): Task
+
+	"Returns the number of jobs currently in the queue, waiting, or delayed for a given task."
+	count(taskId: String!): Int
 }

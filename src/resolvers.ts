@@ -28,5 +28,26 @@ export default {
 				return ctx.task.count();
 			}
 		),
+
+		jobs: combineResolvers(
+			taskResolver,
+			async (parent, args, ctx: JobbaContext) => {
+				const results = await ctx.task.getJobs(args.statuses);
+
+				// TODO: only fill status if `status` field requested
+				for (const result of results) {
+					await result.fillStatus();
+				}
+
+				return results;
+			}
+		),
+
+		job: combineResolvers(
+			taskResolver,
+			(parent, args, ctx: JobbaContext) => {
+				return ctx.task.getJob(args.jobId);
+			}
+		),
 	},
 };

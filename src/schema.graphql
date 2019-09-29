@@ -1,3 +1,4 @@
+scalar Date
 scalar JSON
 scalar JSONObject
 
@@ -10,6 +11,45 @@ type Task {
 
 	"Human friendly description."
 	description: String
+}
+
+type Job {
+	id: String!
+	taskId: String!
+	params: JSONObject
+	data: JobData
+	status: Status
+}
+
+type JobData {
+	name: String
+	params: JSONObject
+	state: JSONObject
+	logs: [Log]
+	history: [JSONObject]
+}
+
+type Log {
+	level: LogLevel
+	time: Date
+	values: [JSON]
+}
+
+enum LogLevel {
+	debug
+	error
+	info
+	log
+	warn
+}
+
+enum Status {
+	active
+	completed
+	delayed
+	failed
+	paused
+	waiting
 }
 
 type Query {
@@ -30,4 +70,16 @@ type Query {
 
 	"Returns the number of jobs currently in the queue, waiting, or delayed for a given task."
 	count(taskId: String!): Int
+
+	"Get a list of jobs for a given task."
+	jobs(
+		taskId: String!
+		statuses: [Status]
+	): [Job]
+
+	"Get a specific job."
+	job(
+		taskId: String!
+		jobId: String!
+	): Job
 }

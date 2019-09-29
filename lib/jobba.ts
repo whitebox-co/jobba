@@ -6,14 +6,20 @@ import Arena from 'bull-arena';
 import Yawk, { Registrar, YawkConfig } from 'yawk';
 import express from 'koa-express';
 import koaStatic from 'koa-static';
+import resolvers from '../src/resolvers';
+import { ApolloServer } from 'apollo-server';
 import { Context } from 'koa';
 import { Task, TaskParams } from './task';
+import { importSchema } from 'graphql-import';
 import { routes } from '../src/routes';
 
+const schema = importSchema(path.join(__dirname, '../src/schema.graphql'));
+
 export interface JobbaConfig {
-	yawk: YawkConfig;
+	yawk?: YawkConfig;
 }
 
+// TODO: extend ApolloServer Context instead
 export interface JobbaContext extends Context {
 	jobba?: Jobba;
 	task?: Task;
@@ -27,6 +33,7 @@ export class Jobba {
 		},
 	};
 
+	public server: ApolloServer;
 	public yawk: Yawk;
 	public tasks: Map<string, Task>;
 
@@ -34,6 +41,13 @@ export class Jobba {
 
 	constructor(config: JobbaConfig, ...registrars: Array<Registrar<Jobba>>) {
 		this.config = _.defaultsDeep(config, Jobba.defaultConfig);
+		this.server = new ApolloServer({
+			typeDefs: schema,
+			resolvers,
+			context: {
+				jobba: this,
+			},
+		});
 		this.yawk = new Yawk(this.config.yawk);
 		this.tasks = new Map();
 
@@ -44,7 +58,10 @@ export class Jobba {
 		return this.tasks.get(id);
 	}
 
-	public start() {
+	public async start() {
+		const { url } = await this.server.listen({ port: 3001 });
+		console.log(`🚀  Server ready at ${url}`);
+
 		this.yawk.start();
 	}
 

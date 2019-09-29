@@ -1,4 +1,24 @@
+type Task {
+	"Unique id of the task."
+	id: String!
+
+	"Human readable name."
+	name: String!
+
+	"Human friendly description."
+	description: String
+}
+
 type Query {
 	"Returns a static `true` value while Jobba is running."
 	healthcheck: Boolean
+
+	"""
+	Get all registered job ids.
+	This is a legacy endpoint. Realistically you should use `tasks` instead."
+	"""
+	taskIds: [String]
+
+	"Get all registered tasks."
+	tasks: [Task]
 }

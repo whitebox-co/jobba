@@ -4,7 +4,7 @@
   "description": "Jobba the Hub",
   "main": "dist/lib/index.js",
   "scripts": {
-    "build": "tsc && [ -d ./dist/bin ] && chmod -f +x ./dist/bin/* || exit 0",
+    "build": "tsc && cp ./src/*.graphql ./dist/src/ && [ -d ./dist/bin ] && chmod -f +x ./dist/bin/* || exit 0",
     "clean": "rm -rf ./dist",
     "lint": "tslint -t stylish './src/**/*.ts' || exit 0",
     "lint:verbose": "tslint -t codeFrame './src/**/*.ts' || exit 0",
@@ -22,9 +22,12 @@
   "author": "Ross Hadden",
   "license": "ISC",
   "dependencies": {
+    "apollo-server": "^2.9.4",
     "bull": "^3.11.0",
     "bull-arena": "git+https://github.com/whitebox-co/arena.git#dev",
     "chalk": "^2.4.2",
+    "graphql": "^14.5.8",
+    "graphql-import": "^0.7.1",
     "joi": "^13.7.0",
     "koa": "^2.8.1",
     "koa-bodyparser": "^4.2.1",

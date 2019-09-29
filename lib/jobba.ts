@@ -8,7 +8,8 @@ import express from 'koa-express';
 import koaStatic from 'koa-static';
 import resolvers from '../src/resolvers';
 import { ApolloServer } from 'apollo-server';
-import { Context } from 'koa';
+import { Context as KoaContext } from 'koa';
+import { Context } from 'apollo-server-core';
 import { Task, TaskParams } from './task';
 import { importSchema } from 'graphql-import';
 import { routes } from '../src/routes';
@@ -19,8 +20,12 @@ export interface JobbaConfig {
 	yawk?: YawkConfig;
 }
 
-// TODO: extend ApolloServer Context instead
 export interface JobbaContext extends Context {
+	jobba?: Jobba;
+	task?: Task;
+}
+
+export interface JobbaYawkContext extends KoaContext {
 	jobba?: Jobba;
 	task?: Task;
 }
@@ -94,7 +99,7 @@ export class Jobba {
 	private async init(registrars: Array<Registrar<Jobba>>) {
 		console.log('Initializing Jobba...');
 		// TODO: make this middleware just for task routes
-		this.yawk.app.use((ctx: JobbaContext, next) => {
+		this.yawk.app.use((ctx: JobbaYawkContext, next) => {
 			ctx.jobba = this;
 			return next();
 		});

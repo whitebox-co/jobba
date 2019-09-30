@@ -24,7 +24,7 @@ type Query {
 	"Get a list of jobs for a given task."
 	jobs(
 		taskId: String!
-		options: JobsOptionsInput
+		options: JobsOptions
 	): [Job]
 
 	"Get a specific job."
@@ -35,10 +35,19 @@ type Query {
 }
 
 type Mutation {
+	"""
+	Schedules a new job in the job queue.
+
+	@proxy [Bull.Queue#add](https://github.com/OptimalBits/bull/blob/develop/REFERENCE.md#queueadd)
+	"""
 	schedule(
 		taskId: String!
+
+		"Arbitrary job-specific params may be passed and used in the process method of jobs."
 		params: JSONObject
-		options: ScheduleOptionsInput
+
+		"Options to pass through to Bull's queue creation"
+		options: ScheduleOptions
 	): Job
 }
 
@@ -69,9 +78,12 @@ type JobData {
 	history: [JSONObject]
 }
 
+"Container for things logged by jobs."
 type Log {
 	level: LogLevel
 	time: Date
+
+	"Array of arbitrary values that were logged."
 	values: [JSON]
 }
 
@@ -97,33 +109,134 @@ enum Sort {
 	descending
 }
 
-input JobsOptionsInput {
+input JobsOptions {
 	statuses: [Status]
 	begin: Int
 	end: Int
 	sort: Sort
+
+	"""
+	Limit the number of results.
+
+	> Note: The limit is done via the server with a simple naive `Array#slice`.
+	"""
 	limit: Int
+
+	"An arbitrary object to filter jobs with using `_.filter`."
 	filter: JSONObject
 }
 
-input ScheduleOptionsInput {
+"@ref [Bull.JobOpts](https://github.com/OptimalBits/bull/blob/develop/REFERENCE.md#queueadd)"
+input ScheduleOptions {
+	"""
+	Optional priority value.
+
+	Ranges from 1 (highest priority) to MAX_INT (lowest priority).
+
+	Note that using priorities has a slight impact on performance, so do not use it if not required.
+	"""
 	priority: Int
+
+	"""
+	An amount of miliseconds to wait until this job can be processed.
+
+	Note that for accurate delays, both server and clients should have their clocks synchronized.
+	"""
 	delay: Int
+
+	"The total number of attempts to try the job until it completes."
 	attempts: Int
-	repeat: RepeatOptionsInput
-	backoff: JSON
+
+	"Repeat job according to a cron specification."
+	repeat: RepeatOptions
+
+	"Backoff setting for automatic retries if the job fails"
+	backoff: BackoffOptions
+
+	"If true, adds the job to the right of the queue instead of the left (default false)."
 	lifo: Boolean
+
+	"The number of milliseconds after which the job should be fail with a timeout error."
 	timeout: Int
+
+	"""
+	Override the job ID.
+
+	By default, the job ID is a unique integer, but you can use this setting to override it.
+	If you use this option, it is up to you to ensure the jobId is unique.
+	If you attempt to add a job with an id that already exists, it will not be added.
+	"""
 	jobId: String
-	removeOnComplete: Boolean
-	removeOnFail: Boolean
+
+	"""
+	If true, removes the job when it successfully completes.
+
+	@accepts `Boolean` | `Number`
+
+	A number specified the amount of jobs to keep.
+	Default behavior is to keep the job in the completed set.
+	"""
+	removeOnComplete: JSON
+
+	"""
+	If true, removes the job when it fails after all attempts.
+
+	@accepts `Boolean` | `Number`
+
+	A number specified the amount of jobs to keep
+	Default behavior is to keep the job in the failed set.
+	"""
+	removeOnFail: JSON
+
+	"Limits the amount of stack trace lines that will be recorded in the stacktrace."
 	stackTrackLimit: Int
 }
 
-input RepeatOptionsInput {
+"@ref [Bull.RepeatOpts](https://github.com/OptimalBits/bull/blob/develop/REFERENCE.md#queueadd)"
+input RepeatOptions {
+	"""
+	Cron string for repeating runs.
+
+	Mutually exclusive with `every` setting.
+	"""
 	cron: String
+
+	"Timezone."
 	tz: String
+
+	"""
+	Start date when the repeat job should start repeating (only valid with cron).
+
+	@accepts Date | String | Int
+	"""
+	startDate: JSON
+
+	"""
+	End date when the repeat job should stop repeating.
+
+	@accepts Date | String | Int
+	"""
 	endDate: JSON
+
+	"Number of times the job should repeat at max."
 	limit: Int
+
+	"""
+	Repeat every number of specified milliseconds.
+
+	Mutually exclusive with `cron` setting.
+	"""
 	every: Int
+
+	"The start value for the repeat iteration count."
+	count: Int
+}
+
+"@ref [Bull.BackoffOpts](https://github.com/OptimalBits/bull/blob/develop/REFERENCE.md#queueadd)"
+input BackoffOptions {
+	"Backoff type, which can be either `fixed` or `exponential`. A custom backoff strategy can also be specified in `backoffStrategies` on the queue settings."
+	type: String
+
+	"Backoff delay, in milliseconds."
+	delay: Int!
 }

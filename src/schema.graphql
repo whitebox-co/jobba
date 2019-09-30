@@ -24,13 +24,21 @@ type Query {
 	"Get a list of jobs for a given task."
 	jobs(
 		taskId: String!
-		input: JobsInput
+		options: JobsOptionsInput
 	): [Job]
 
 	"Get a specific job."
 	job(
 		taskId: String!
 		jobId: String!
+	): Job
+}
+
+type Mutation {
+	schedule(
+		taskId: String!
+		params: JSONObject
+		options: ScheduleOptionsInput
 	): Job
 }
 
@@ -89,11 +97,33 @@ enum Sort {
 	descending
 }
 
-input JobsInput {
+input JobsOptionsInput {
 	statuses: [Status]
 	begin: Int
 	end: Int
 	sort: Sort
 	limit: Int
 	filter: JSONObject
+}
+
+input ScheduleOptionsInput {
+	priority: Int
+	delay: Int
+	attempts: Int
+	repeat: RepeatOptionsInput
+	backoff: JSON
+	lifo: Boolean
+	timeout: Int
+	jobId: String
+	removeOnComplete: Boolean
+	removeOnFail: Boolean
+	stackTrackLimit: Int
+}
+
+input RepeatOptionsInput {
+	cron: String
+	tz: String
+	endDate: JSON
+	limit: Int
+	every: Int
 }

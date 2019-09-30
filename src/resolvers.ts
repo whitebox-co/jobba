@@ -72,4 +72,10 @@ export default {
 			}
 		),
 	},
+
+	Mutation: {
+		schedule: (parent, { taskId, params, options }: any, ctx: JobbaContext) => {
+			return ctx.jobba.schedule(taskId, params, options);
+		}
+	}
 };

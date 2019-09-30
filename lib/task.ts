@@ -62,8 +62,9 @@ export class Task implements TaskParams {
 		return bullJobs.map((bullJob) => new this.Job(this, bullJob));
 	}
 
-	public schedule(params?: object, options?: Bull.JobOptions) {
-		return toPromise(this.queue.add(params, options));
+	public async schedule(params?: object, options?: Bull.JobOptions) {
+		const bullJob = await toPromise(this.queue.add(params, options));
+		return this.getJob(bullJob.id);
 	}
 
 	public pause() { return toPromise(this.queue.pause()); }

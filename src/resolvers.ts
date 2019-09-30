@@ -3,7 +3,7 @@ import { JobbaContext } from '../lib';
 import { combineResolvers } from 'graphql-resolvers';
 
 // Add task to the context based on the taskId argument.
-const taskResolver = (parent, { taskId }, ctx: JobbaContext) => {
+const taskResolver = (parent, { taskId }: any, ctx: JobbaContext) => {
 	ctx.task = ctx.jobba.getTask(taskId);
 };
 
@@ -74,8 +74,39 @@ export default {
 	},
 
 	Mutation: {
-		schedule: (parent, { taskId, params, options }: any, ctx: JobbaContext) => {
-			return ctx.jobba.schedule(taskId, params, options);
-		}
+		schedule: combineResolvers(
+			taskResolver,
+			(parent, { params, options }: any, ctx: JobbaContext) => {
+				return ctx.task.schedule(params, options);
+			}
+		),
+
+		pause: combineResolvers(
+			taskResolver,
+			(parent, args: any, ctx: JobbaContext) => {
+				return ctx.task.pause();
+			}
+		),
+
+		resume: combineResolvers(
+			taskResolver,
+			(parent, args: any, ctx: JobbaContext) => {
+				return ctx.task.resume();
+			}
+		),
+
+		empty: combineResolvers(
+			taskResolver,
+			(parent, args: any, ctx: JobbaContext) => {
+				return ctx.task.empty();
+			}
+		),
+
+		close: combineResolvers(
+			taskResolver,
+			(parent, args: any, ctx: JobbaContext) => {
+				return ctx.task.close();
+			}
+		),
 	}
 };

@@ -38,7 +38,7 @@ type Mutation {
 	"""
 	Schedules a new job in the job queue.
 
-	@proxy [Bull.Queue#add](https://github.com/OptimalBits/bull/blob/develop/REFERENCE.md#queueadd)
+	@proxy [`Bull.Queue#add`](https://github.com/OptimalBits/bull/blob/develop/REFERENCE.md#queueadd)
 	"""
 	schedule(
 		taskId: String!
@@ -49,8 +49,51 @@ type Mutation {
 		"Options to pass through to Bull's queue creation"
 		options: ScheduleOptions
 	): Job
+
+	"""
+	Pauses a task.
+
+	@proxy [`Bull.Queue#pause`](https://github.com/OptimalBits/bull/blob/develop/REFERENCE.md#queuepause)
+
+	A paused task will not process new jobs until resumed,
+	but current jobs being processed will continue until they are finalized.
+	"""
+	pause(taskId: String!): Task
+
+	"""
+	Resumes a paused task.
+
+	@proxy [`Bull.Queue#resume`](https://github.com/OptimalBits/bull/blob/develop/REFERENCE.md#queueresume)
+	"""
+	resume(taskId: String!): Task
+
+	"""
+	Empties a task, deleting all of the input lists and associated jobs.
+
+	@proxy [`Bull.Queue#empty`](https://github.com/OptimalBits/bull/blob/develop/REFERENCE.md#queueempty)
+	"""
+	empty(taskId: String!): Task
+
+	"""
+	Closes the underlying redis client.
+
+	@proxy [`Bull.Queue#close`](https://github.com/OptimalBits/bull/blob/develop/REFERENCE.md#queueclose)
+
+	Use this to perform a graceful shutdown.
+
+	Close can be called from anywhere, with one caveat:
+	if called from within a job handler the queue won't close until after the job has been processed.
+	See referenced proxy method for details and workarounds.
+	"""
+	close(taskId: String!): Task
 }
 
+"""
+One of Jobba's core types.
+Tasks are what you schedule when you want to run a job, now or in the future.
+
+@proxy [`Bull.Queue`](https://github.com/OptimalBits/bull/blob/develop/REFERENCE.md#queue)
+"""
 type Task {
 	"Unique id of the task."
 	id: String!
@@ -62,6 +105,13 @@ type Task {
 	description: String
 }
 
+"""
+One of Jobba's core types.
+A Job gets created every time a scheduled Task runs.
+It contains status, progress, logs, and details of the run.
+
+@proxy [`Bull.Job`](https://github.com/OptimalBits/bull/blob/develop/REFERENCE.md#job)
+"""
 type Job {
 	id: String!
 	taskId: String!

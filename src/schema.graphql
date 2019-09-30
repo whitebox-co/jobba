@@ -2,6 +2,38 @@ scalar Date
 scalar JSON
 scalar JSONObject
 
+type Query {
+	"Returns a static `true` value while Jobba is running."
+	healthcheck: Boolean
+
+	"""
+	Get all registered job ids.
+	This is a legacy endpoint. Realistically you should use `tasks` instead."
+	"""
+	taskIds: [String]
+
+	"Get all registered tasks."
+	tasks: [Task]
+
+	"Get a single task."
+	task(taskId: String!): Task
+
+	"Returns the number of jobs currently in the queue, waiting, or delayed for a given task."
+	count(taskId: String!): Int
+
+	"Get a list of jobs for a given task."
+	jobs(
+		taskId: String!
+		input: JobsInput
+	): [Job]
+
+	"Get a specific job."
+	job(
+		taskId: String!
+		jobId: String!
+	): Job
+}
+
 type Task {
 	"Unique id of the task."
 	id: String!
@@ -64,36 +96,4 @@ input JobsInput {
 	sort: Sort
 	limit: Int
 	filter: JSONObject
-}
-
-type Query {
-	"Returns a static `true` value while Jobba is running."
-	healthcheck: Boolean
-
-	"""
-	Get all registered job ids.
-	This is a legacy endpoint. Realistically you should use `tasks` instead."
-	"""
-	taskIds: [String]
-
-	"Get all registered tasks."
-	tasks: [Task]
-
-	"Get a single task."
-	task(taskId: String!): Task
-
-	"Returns the number of jobs currently in the queue, waiting, or delayed for a given task."
-	count(taskId: String!): Int
-
-	"Get a list of jobs for a given task."
-	jobs(
-		taskId: String!
-		input: JobsInput
-	): [Job]
-
-	"Get a specific job."
-	job(
-		taskId: String!
-		jobId: String!
-	): Job
 }

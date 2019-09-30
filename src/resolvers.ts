@@ -1,3 +1,4 @@
+import * as _ from 'lodash';
 import { JobbaContext } from '../lib';
 import { combineResolvers } from 'graphql-resolvers';
 
@@ -5,6 +6,15 @@ import { combineResolvers } from 'graphql-resolvers';
 const taskResolver = (parent, args, ctx: JobbaContext) => {
 	ctx.task = ctx.jobba.getTask(args.taskId);
 };
+
+interface JobsInput {
+	statuses: Array<string>;
+	begin: number;
+	end: number;
+	sort: string;
+	limit: number;
+	filter: any;
+}
 
 export default {
 	Query: {
@@ -32,8 +42,20 @@ export default {
 		jobs: combineResolvers(
 			taskResolver,
 			async (parent, args, ctx: JobbaContext) => {
-				const results = await ctx.task.getJobs(args.statuses);
+				const input: JobsInput = args.input || {};
+				let results = await ctx.task.getJobs(input.statuses);
 
+				// sort
+				results = _.sortBy(results, 'id');
+				if (input.sort === 'descending') results.reverse();
+
+				// limit
+				results = results.slice(0, input.limit);
+
+				// filter
+				if (input.filter) results = _.filter(results, input.filter);
+
+				// annotate jobs with current status
 				// TODO: only fill status if `status` field requested
 				for (const result of results) {
 					await result.fillStatus();

@@ -52,6 +52,20 @@ enum Status {
 	waiting
 }
 
+enum Sort {
+	ascending
+	descending
+}
+
+input JobsInput {
+	statuses: [Status]
+	begin: Int
+	end: Int
+	sort: Sort
+	limit: Int
+	filter: JSONObject
+}
+
 type Query {
 	"Returns a static `true` value while Jobba is running."
 	healthcheck: Boolean
@@ -74,7 +88,7 @@ type Query {
 	"Get a list of jobs for a given task."
 	jobs(
 		taskId: String!
-		statuses: [Status]
+		input: JobsInput
 	): [Job]
 
 	"Get a specific job."

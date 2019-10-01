@@ -163,6 +163,12 @@ input JobsOptions {
 	statuses: [Status]
 	begin: Int
 	end: Int
+
+	"""
+	The sorting direction of the results.
+
+	Defaults to ascending.
+	"""
 	sort: Sort
 
 	"""

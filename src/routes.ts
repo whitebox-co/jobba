@@ -1,13 +1,13 @@
 import * as _ from 'lodash';
 import * as joi from 'joi';
-import Jobba, { JobbaContext, Task } from '../lib';
 import Yawk, { Method } from 'yawk';
+import { Jobba, JobbaYawkContext, Task } from '../lib';
 
-export default function(yawk: Yawk) {
+export function routes(yawk: Yawk) {
 	yawk.register({
 		path: '/tasks',
 		description: 'List all registered tasks.',
-		handler: (ctx: JobbaContext) => {
+		handler: (ctx: JobbaYawkContext) => {
 			return ctx.jobba.list();
 		},
 	});
@@ -21,7 +21,7 @@ export default function(yawk: Yawk) {
 			,
 			taskId: joi.string(),
 		},
-		handler: async (ctx: JobbaContext) => {
+		handler: async (ctx: JobbaYawkContext) => {
 			const { type, taskId }  = ctx.input;
 			const method = `get${type.charAt(0).toUpperCase()}${type.slice(1)}`;
 			const result = [];
@@ -50,7 +50,7 @@ export default function(yawk: Yawk) {
 		inputSchema: {
 			taskId: joi.string().required(),
 		},
-		handler: async (ctx: JobbaContext) => {
+		handler: async (ctx: JobbaYawkContext) => {
 			return !!ctx.jobba.getTask(ctx.input.taskId);
 		},
 	});
@@ -58,7 +58,7 @@ export default function(yawk: Yawk) {
 	yawk.register({
 		path: '/task/*',
 		method: Method.All,
-		handler: (ctx: JobbaContext, next) => {
+		handler: (ctx: JobbaYawkContext, next) => {
 			if (ctx.input.taskId) ctx.task = ctx.jobba.getTask(ctx.input.taskId);
 			return next();
 		},
@@ -103,7 +103,7 @@ export default function(yawk: Yawk) {
 				stackTraceLimit: joi.number(),
 			},
 		},
-		handler: (ctx: JobbaContext) => {
+		handler: (ctx: JobbaYawkContext) => {
 			const { options, params, taskId } = ctx.input as any;
 			return ctx.jobba.schedule(taskId, params, options);
 		},
@@ -115,17 +115,18 @@ export default function(yawk: Yawk) {
 		inputSchema: {
 			taskId: joi.string().required(),
 		},
-		handler: (ctx: JobbaContext) => {
+		handler: (ctx: JobbaYawkContext) => {
 			return ctx.task.pause();
 		},
 	});
 
 	yawk.register({
 		path: '/task/resume',
+		method: Method.Post,
 		inputSchema: {
 			taskId: joi.string().required(),
 		},
-		handler: (ctx: JobbaContext) => {
+		handler: (ctx: JobbaYawkContext) => {
 			return ctx.task.resume();
 		},
 	});
@@ -135,7 +136,7 @@ export default function(yawk: Yawk) {
 		inputSchema: {
 			taskId: joi.string().required(),
 		},
-		handler: (ctx: JobbaContext) => {
+		handler: (ctx: JobbaYawkContext) => {
 			return ctx.task.count();
 		},
 	});
@@ -146,7 +147,7 @@ export default function(yawk: Yawk) {
 		inputSchema: {
 			taskId: joi.string().required(),
 		},
-		handler: (ctx: JobbaContext) => {
+		handler: (ctx: JobbaYawkContext) => {
 			return ctx.task.empty();
 		},
 	});
@@ -157,7 +158,7 @@ export default function(yawk: Yawk) {
 		inputSchema: {
 			taskId: joi.string().required(),
 		},
-		handler: (ctx: JobbaContext) => {
+		handler: (ctx: JobbaYawkContext) => {
 			return ctx.task.close();
 		},
 	});
@@ -175,7 +176,7 @@ export default function(yawk: Yawk) {
 			filter: joi.object(),
 			addStatus: joi.boolean().description('Optionally annotate jobs with their current status.'),
 		},
-		handler: async (ctx: JobbaContext) => {
+		handler: async (ctx: JobbaYawkContext) => {
 			const { addStatus, begin, end, filter, limit } = ctx.input;
 			let { asc, types } = ctx.input;
 			asc = (typeof asc !== 'undefined') && ![ false, 'false', 0, '0' ].includes(asc);
@@ -210,7 +211,7 @@ export default function(yawk: Yawk) {
 			taskId: joi.string().required(),
 			jobId: joi.string().required(),
 		},
-		handler: (ctx: JobbaContext) => {
+		handler: (ctx: JobbaYawkContext) => {
 			const { jobId } = ctx.input;
 			return ctx.task.getJob(jobId);
 		},

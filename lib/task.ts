@@ -1,7 +1,7 @@
-import * as Bull from 'bull';
 import * as _ from 'lodash';
-import Job from './job';
-import Jobba from './jobba';
+import Bull from 'bull';
+import { Job } from './job';
+import { Jobba } from './jobba';
 import { toPromise } from './utils';
 
 export interface TaskParams {
@@ -12,7 +12,7 @@ export interface TaskParams {
 	options?: Bull.QueueOptions;
 }
 
-export default class Task implements TaskParams {
+export class Task implements TaskParams {
 	public id: string;
 	public Job: typeof Job;
 	public name: string;
@@ -62,8 +62,9 @@ export default class Task implements TaskParams {
 		return bullJobs.map((bullJob) => new this.Job(this, bullJob));
 	}
 
-	public schedule(params?: object, options?: Bull.JobOptions) {
-		return toPromise(this.queue.add(params, options));
+	public async schedule(params?: object, options?: Bull.JobOptions) {
+		const bullJob = await toPromise(this.queue.add(params, options));
+		return this.getJob(bullJob.id);
 	}
 
 	public pause() { return toPromise(this.queue.pause()); }

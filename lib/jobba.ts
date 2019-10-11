@@ -1,17 +1,23 @@
-import * as Arena from 'bull-arena';
 import * as Bluebird from 'bluebird';
 import * as Bull from 'bull';
 import * as _ from 'lodash';
-import * as express from 'koa-express';
-import * as koaStatic from 'koa-static';
 import * as path from 'path';
-import Task, { TaskParams } from './task';
+import Arena from 'bull-arena';
 import Yawk, { Registrar, YawkConfig } from 'yawk';
-import routes from '../src/routes';
-import { Context } from 'koa';
+import express from 'koa-express';
+import koaStatic from 'koa-static';
+import resolvers from '../src/resolvers';
+import { ApolloServer } from 'apollo-server-koa';
+import { Context as KoaContext } from 'koa';
+import { Context } from 'apollo-server-core';
+import { Task, TaskParams } from './task';
+import { importSchema } from 'graphql-import';
+import { routes } from '../src/routes';
+
+const schema = importSchema(path.join(__dirname, '../src/schema.graphql'));
 
 export interface JobbaConfig {
-	yawk: YawkConfig;
+	yawk?: YawkConfig;
 }
 
 export interface JobbaContext extends Context {
@@ -19,7 +25,12 @@ export interface JobbaContext extends Context {
 	task?: Task;
 }
 
-export default class Jobba {
+export interface JobbaYawkContext extends KoaContext {
+	jobba?: Jobba;
+	task?: Task;
+}
+
+export class Jobba {
 	private static defaultConfig: Partial<JobbaConfig> = {
 		yawk: {
 			prefix: '/api',
@@ -27,6 +38,7 @@ export default class Jobba {
 		},
 	};
 
+	public server: ApolloServer;
 	public yawk: Yawk;
 	public tasks: Map<string, Task>;
 
@@ -34,6 +46,13 @@ export default class Jobba {
 
 	constructor(config: JobbaConfig, ...registrars: Array<Registrar<Jobba>>) {
 		this.config = _.defaultsDeep(config, Jobba.defaultConfig);
+		this.server = new ApolloServer({
+			typeDefs: schema,
+			resolvers,
+			context: {
+				jobba: this,
+			},
+		});
 		this.yawk = new Yawk(this.config.yawk);
 		this.tasks = new Map();
 
@@ -44,7 +63,7 @@ export default class Jobba {
 		return this.tasks.get(id);
 	}
 
-	public start() {
+	public async start() {
 		this.yawk.start();
 	}
 
@@ -77,7 +96,7 @@ export default class Jobba {
 	private async init(registrars: Array<Registrar<Jobba>>) {
 		console.log('Initializing Jobba...');
 		// TODO: make this middleware just for task routes
-		this.yawk.app.use((ctx: JobbaContext, next) => {
+		this.yawk.app.use((ctx: JobbaYawkContext, next) => {
 			ctx.jobba = this;
 			return next();
 		});
@@ -93,6 +112,10 @@ export default class Jobba {
 			disableListen: true,
 			useCdn: false,
 		});
+
+		// Mount graphql server
+		this.server.applyMiddleware({ app: this.yawk.app });
+
 		// Make UI work in both normal and linked dev environments, respectively
 		this.yawk.app.use(koaStatic(path.join(__dirname, '../../..', 'bull-arena/public').replace('/dist', '')));
 		this.yawk.app.use(koaStatic(path.join(__dirname, '..', 'node_modules/bull-arena/public').replace('/dist', '')));

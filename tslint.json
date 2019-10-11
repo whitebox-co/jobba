@@ -20,9 +20,11 @@
 		"number-literal-format": true,
 		"object-literal-sort-keys": false,
 		"only-arrow-functions": false,
+		"arrow-parens": [ true ],
 		"ordered-imports": false,
 		"quotemark": [ true, "single" ],
 		"trailing-comma": false,
+		"max-line-length": [ true, 200 ],
 		"whitespace": [ true, "check-branch", "check-decl", "check-operator", "check-module", "check-separator", "check-type" ]
 	}
 }

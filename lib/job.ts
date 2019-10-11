@@ -1,9 +1,9 @@
 import * as Bull from 'bull';
 import * as _ from 'lodash';
-import * as moment from 'moment';
-import Jobba from './jobba';
-import Task from './task';
 import chalk from 'chalk';
+import moment from 'moment';
+import { Jobba } from './jobba';
+import { Task } from './task';
 import { toPromise } from './utils';
 
 type LogLevel = 'debug' | 'error' | 'info' | 'log' | 'warn';
@@ -25,7 +25,7 @@ function errorToJson() {
 	return { name: this.name, message: this.message, stack: this.stack };
 }
 
-export default class Job {
+export class Job {
 	public static serializedKeys = [ 'id', 'taskId', 'status', 'params', 'data', 'job' ];
 
 	public static isJobData(value: any) {
@@ -44,7 +44,7 @@ export default class Job {
 	protected id: Bull.JobId;
 	protected taskId: string;
 
-	private data: {
+	protected data: {
 		name: string;
 		params: any;
 		state: any;
@@ -133,7 +133,7 @@ export default class Job {
 	protected promote() { return toPromise(this.job.promote()); }
 	protected finished() { return toPromise(this.job.finished()); }
 
-	private toJSON() {
+	protected toJSON() {
 		const result = {};
 		for (const key of Job.serializedKeys) {
 			if (key === 'task') continue;

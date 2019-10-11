@@ -1,47 +1,66 @@
 {
   "name": "jobba",
-  "version": "0.6.2",
+  "version": "0.8.1",
   "description": "Jobba the Hub",
   "main": "dist/lib/index.js",
   "scripts": {
-    "build": "tsc && [ -d ./dist/bin ] && chmod -f +x ./dist/bin/* || exit 0",
+    "build": "tsc && cp ./src/*.graphql ./dist/src/ && [ -d ./dist/bin ] && chmod -f +x ./dist/bin/* || exit 0",
     "clean": "rm -rf ./dist",
     "lint": "tslint -t stylish './src/**/*.ts' || exit 0",
     "lint:verbose": "tslint -t codeFrame './src/**/*.ts' || exit 0",
-    "postinstall": "npm run build",
+    "prepublish": "npm run build",
     "watch": "tsc -w"
   },
   "keywords": [
     "job",
     "hub"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/whitebox-co/jobba.git"
+  },
   "author": "Ross Hadden",
   "license": "ISC",
   "dependencies": {
-    "bull": "^3.5.2",
+    "apollo-server-koa": "^2.9.4",
+    "bull": "^3.11.0",
     "bull-arena": "git+https://github.com/whitebox-co/arena.git#dev",
     "chalk": "^2.4.2",
+    "graphql": "^14.5.8",
+    "graphql-import": "^0.7.1",
+    "graphql-resolvers": "^0.3.3",
+    "graphql-type-json": "^0.3.0",
     "joi": "^13.7.0",
-    "koa": "^2.6.2",
+    "koa": "^2.8.1",
     "koa-bodyparser": "^4.2.1",
     "koa-express": "^1.1.0",
     "koa-router": "^7.4.0",
     "koa-static": "^5.0.0",
-    "lodash": "^4.17.11",
-    "moment": "^2.23.0",
-    "yawk": "git+https://github.com/rosshadden/yawk.git"
+    "lodash": "^4.17.15",
+    "moment": "^2.24.0",
+    "yawk": "^0.7.2"
   },
   "devDependencies": {
-    "@types/bluebird": "^3.5.25",
-    "@types/bull": "^3.5.1",
+    "@types/bluebird": "^3.5.27",
+    "@types/bull": "^3.10.3",
+    "@types/graphql-resolvers": "^0.2.2",
+    "@types/graphql-type-json": "^0.3.2",
     "@types/joi": "^13.6.3",
-    "@types/koa": "^2.0.48",
-    "@types/koa-bodyparser": "^5.0.2",
-    "@types/koa-router": "^7.0.37",
-    "@types/lodash": "^4.14.119",
+    "@types/koa": "^2.0.49",
+    "@types/koa-bodyparser": "^4.3.0",
+    "@types/koa-router": "^7.0.42",
+    "@types/lodash": "^4.14.138",
     "@types/moment": "^2.13.0",
-    "@types/node": "^10.12.18",
-    "tslint": "^5.12.1",
-    "typescript": "^3.2.2"
-  }
+    "@types/node": "^10.14.18",
+    "tslint": "^5.20.0",
+    "typescript": "^3.6.3"
+  },
+  "files": [
+    "/*.json",
+    "/.editorconfig",
+    "/dist",
+    "/lib",
+    "/src"
+  ],
+  "types": "dist/lib/index.d.ts"
 }

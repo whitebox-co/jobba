@@ -1,45 +1,27 @@
-import * as Bluebird from 'bluebird';
 import * as Bull from 'bull';
 import * as _ from 'lodash';
 import * as path from 'path';
-import Arena from 'bull-arena';
-import Yawk, { Registrar, YawkConfig } from 'yawk';
-import express from 'koa-express';
-import koaStatic from 'koa-static';
 import resolvers from '../src/resolvers';
-import { ApolloServer } from 'apollo-server-koa';
-import { Context as KoaContext } from 'koa';
+import { ApolloServer } from 'apollo-server';
 import { Context } from 'apollo-server-core';
 import { Task, TaskParams } from './task';
 import { importSchema } from 'graphql-import';
-import { routes } from '../src/routes';
 
 const schema = importSchema(path.join(__dirname, '../src/schema.graphql'));
 
-export interface JobbaConfig {
-	yawk?: YawkConfig;
-}
+export interface JobbaConfig {}
 
 export interface JobbaContext extends Context {
 	jobba?: Jobba;
 	task?: Task;
 }
 
-export interface JobbaYawkContext extends KoaContext {
-	jobba?: Jobba;
-	task?: Task;
-}
+export type Registrar<T> = (registrar: T) => any;
 
 export class Jobba {
-	private static defaultConfig: Partial<JobbaConfig> = {
-		yawk: {
-			prefix: '/api',
-			init: false,
-		},
-	};
+	private static defaultConfig: Partial<JobbaConfig> = {};
 
 	public server: ApolloServer;
-	public yawk: Yawk;
 	public tasks: Map<string, Task>;
 
 	private config: JobbaConfig;
@@ -53,7 +35,6 @@ export class Jobba {
 				jobba: this,
 			},
 		});
-		this.yawk = new Yawk(this.config.yawk);
 		this.tasks = new Map();
 
 		this.init(registrars);
@@ -64,7 +45,8 @@ export class Jobba {
 	}
 
 	public async start() {
-		this.yawk.start();
+		const { url } = await this.server.listen();
+		console.log(`🚀  Server ready at ${url}`);
 	}
 
 	public register(params: Task | TaskParams) {
@@ -95,30 +77,8 @@ export class Jobba {
 
 	private async init(registrars: Array<Registrar<Jobba>>) {
 		console.log('Initializing Jobba...');
-		// TODO: make this middleware just for task routes
-		this.yawk.app.use((ctx: JobbaYawkContext, next) => {
-			ctx.jobba = this;
-			return next();
-		});
-		this.yawk.init([ routes ]);
 
 		console.log('Initializing tasks...');
 		for (const registrar of registrars) await registrar(this);
-
-		console.log('Initializing UI...');
-		const arena = new Arena({
-			queues: [ ...this.tasks.values() ].map((task) => ({ name: task.id, hostId: task.name }))
-		}, {
-			disableListen: true,
-			useCdn: false,
-		});
-
-		// Mount graphql server
-		this.server.applyMiddleware({ app: this.yawk.app });
-
-		// Make UI work in both normal and linked dev environments, respectively
-		this.yawk.app.use(koaStatic(path.join(__dirname, '../../..', 'bull-arena/public').replace('/dist', '')));
-		this.yawk.app.use(koaStatic(path.join(__dirname, '..', 'node_modules/bull-arena/public').replace('/dist', '')));
-		this.yawk.app.use(express(arena));
 	}
 }

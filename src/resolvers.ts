@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import { JobbaContext } from '../lib';
+import { JobbaContext, Status } from '../lib';
 import { combineResolvers } from 'graphql-resolvers';
 
 // Add task to the context based on the taskId argument.
@@ -8,7 +8,7 @@ const taskResolver = (parent, { taskId }: any, ctx: JobbaContext) => {
 };
 
 interface JobsQueryOptions {
-	statuses?: Array<string>;
+	statuses?: Array<Status>;
 	begin?: number;
 	end?: number;
 	sort?: string;
@@ -68,18 +68,15 @@ export default {
 		jobsByType: combineResolvers(
 			taskResolver,
 			async (parent, { status, taskId }: any, ctx: JobbaContext) => {
-				const method = `get${status.charAt(0).toUpperCase()}${status.slice(1)}`;
 				const results = [];
 
 				for (const [ , task ] of ctx.jobba.tasks) {
 					if (taskId && task.id !== taskId) continue;
 
-					// TODO: Make task wrap all of these methods, or make one method to wrap them all
-					const bullJobs = await task.getQueue()[method]();
-
-					for (const bullJob of bullJobs) {
-						const job = await task.getJob(bullJob.id);
+					const jobs = await task.getJobsOfStatus(status);
+					for (const job of jobs) {
 						job.extra = {};
+						const bullJob: any = job.job;
 						if (bullJob.opts && bullJob.opts.repeat) job.extra.cron = bullJob.opts.repeat.cron;
 						if (bullJob.delay) job.extra.next = new Date(bullJob.timestamp + bullJob.delay);
 						results.push(job);

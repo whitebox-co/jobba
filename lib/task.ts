@@ -4,6 +4,8 @@ import { Job } from './job';
 import { Jobba } from './jobba';
 import { toPromise } from './utils';
 
+export type Status = "active" | "completed" | "delayed" | "failed" | "paused" | "waiting";
+
 export interface TaskParams {
 	id: string;
 	Job: typeof Job;
@@ -53,13 +55,19 @@ export class Task implements TaskParams {
 	}
 
 	public async getJobs(
-		types: Array<string>,
+		statuses: Array<Status>,
 		start?: number,
 		end?: number,
 		asc?: boolean
 	): Promise<Array<Job>> {
-		const bullJobs = await toPromise((this.queue as any).getJobs(types, start, end, asc));
+		const bullJobs = await toPromise((this.queue as any).getJobs(statuses, start, end, asc));
 		return bullJobs.map((bullJob) => new this.Job(this, bullJob));
+	}
+
+	public async getJobsOfStatus(status: Status): Promise<Array<Job>> {
+		const method = `get${status.charAt(0).toUpperCase()}${status.slice(1)}`;
+		const bullJobs = await toPromise(this.queue[method]());
+		return bullJobs.map((bullJob: any) => new this.Job(this, bullJob));
 	}
 
 	public async schedule(params?: object, options?: Bull.JobOptions) {

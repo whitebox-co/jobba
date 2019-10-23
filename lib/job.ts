@@ -55,7 +55,8 @@ export class Job {
 		history: Array<any>;
 	};
 
-	constructor(public task: Task, protected job: Bull.Job) {
+	// TODO: Rename @job => @bullJob
+	constructor(public task: Task, public job: Bull.Job) {
 		this.id = job.id;
 		this.taskId = task.id;
 		this.params = job.data;

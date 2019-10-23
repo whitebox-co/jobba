@@ -4,7 +4,7 @@ import { Job } from './job';
 import { Jobba } from './jobba';
 import { toPromise } from './utils';
 
-export type Status = "active" | "completed" | "delayed" | "failed" | "paused" | "waiting";
+export type Status = 'active' | 'completed' | 'delayed' | 'failed' | 'paused' | 'waiting';
 
 export interface TaskParams {
 	id: string;

@@ -11,6 +11,8 @@ const schema = importSchema(path.join(__dirname, '../src/schema.graphql'));
 
 export interface JobbaConfig {
 	port?: number;
+	playground?: boolean;
+	introspection?: boolean;
 }
 
 export interface JobbaContext extends Context {
@@ -21,7 +23,11 @@ export interface JobbaContext extends Context {
 export type Registrar<T> = (registrar: T) => any;
 
 export class Jobba {
-	private static defaultConfig: Partial<JobbaConfig> = {};
+	private static defaultConfig: Partial<JobbaConfig> = {
+		port: 4000,
+		playground: true,
+		introspection: true,
+	};
 
 	public server: ApolloServer;
 	public tasks: Map<string, Task>;
@@ -33,6 +39,8 @@ export class Jobba {
 		this.server = new ApolloServer({
 			typeDefs: schema,
 			resolvers,
+			playground: this.config.playground,
+			introspection: this.config.introspection,
 			context: {
 				jobba: this,
 			},
@@ -42,7 +50,7 @@ export class Jobba {
 		this.init(registrars);
 	}
 
-	public getTask(id): Task {
+	public getTask(id: string): Task {
 		return this.tasks.get(id);
 	}
 

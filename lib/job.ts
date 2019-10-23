@@ -41,6 +41,9 @@ export class Job {
 	public state: any;
 	public status: any;
 
+	// TODO: I don't like how `extra` is handled. Remove or migrate props to job root.
+	public extra: any;
+
 	protected id: Bull.JobId;
 	protected taskId: string;
 
@@ -52,7 +55,7 @@ export class Job {
 		history: Array<any>;
 	};
 
-	constructor(protected task: Task, protected job: Bull.Job) {
+	constructor(public task: Task, protected job: Bull.Job) {
 		this.id = job.id;
 		this.taskId = task.id;
 		this.params = job.data;

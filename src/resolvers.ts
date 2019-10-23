@@ -4,7 +4,7 @@ import { combineResolvers } from 'graphql-resolvers';
 
 // Add task to the context based on the taskId argument.
 const taskResolver = (parent, { taskId }: any, ctx: JobbaContext) => {
-	ctx.task = ctx.jobba.getTask(taskId);
+	if (taskId) ctx.task = ctx.jobba.getTask(taskId);
 };
 
 interface JobsQueryOptions {
@@ -59,6 +59,31 @@ export default {
 				// TODO: only fill status if `status` field requested
 				for (const result of results) {
 					await result.fillStatus();
+				}
+
+				return results;
+			}
+		),
+
+		jobsByType: combineResolvers(
+			taskResolver,
+			async (parent, { status, taskId }: any, ctx: JobbaContext) => {
+				const method = `get${status.charAt(0).toUpperCase()}${status.slice(1)}`;
+				const results = [];
+
+				for (const [ , task ] of ctx.jobba.tasks) {
+					if (taskId && task.id !== taskId) continue;
+
+					// TODO: Make task wrap all of these methods, or make one method to wrap them all
+					const bullJobs = await task.getQueue()[method]();
+
+					for (const bullJob of bullJobs) {
+						const job = await task.getJob(bullJob.id);
+						job.extra = {};
+						if (bullJob.opts && bullJob.opts.repeat) job.extra.cron = bullJob.opts.repeat.cron;
+						if (bullJob.delay) job.extra.next = new Date(bullJob.timestamp + bullJob.delay);
+						results.push(job);
+					}
 				}
 
 				return results;

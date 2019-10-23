@@ -27,6 +27,12 @@ type Query {
 		options: JobsOptions
 	): [Job]
 
+	"Get a list of jobs matching a given type."
+	jobsByType(
+		status: Status!
+		taskId: String
+	): [Job]
+
 	"Get a specific job."
 	job(
 		taskId: String!
@@ -118,6 +124,20 @@ type Job {
 	params: JSONObject
 	data: JobData
 	status: Status
+
+	"Task that spawned the job."
+	task: Task!
+
+	"Extra data optionally added where relevant (ex: the jobsByType endpoint)."
+	extra: ExtraJobData
+}
+
+type ExtraJobData {
+	"Scheduled repeat option."
+	cron: String
+
+	"Next scheduled run of the job."
+	next: String
 }
 
 type JobData {

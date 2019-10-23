@@ -9,7 +9,9 @@ import { importSchema } from 'graphql-import';
 
 const schema = importSchema(path.join(__dirname, '../src/schema.graphql'));
 
-export interface JobbaConfig {}
+export interface JobbaConfig {
+	port?: number;
+}
 
 export interface JobbaContext extends Context {
 	jobba?: Jobba;
@@ -45,7 +47,7 @@ export class Jobba {
 	}
 
 	public async start() {
-		const { url } = await this.server.listen();
+		const { url } = await this.server.listen({ port: this.config.port });
 		console.log(`🚀  Server ready at ${url}`);
 	}
 

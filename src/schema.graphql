@@ -21,17 +21,14 @@ type Query {
 	"Returns the number of jobs currently in the queue, waiting, or delayed for a given task."
 	count(taskId: String!): Int
 
-	"Get a list of jobs for a given task."
-	jobs(
-		taskId: String!
-		statuses: [Status]
-		options: JobsOptions
-	): [Job]
+	"""
+	Get a list of jobs.
 
-	"Get a list of jobs across all tasks matching a given status."
-	jobsByStatus(
-		status: Status!
+	Optionally filter by task, status, and arbitrary runtime filters.
+	"""
+	jobs(
 		taskId: String
+		statuses: [Status]
 		options: JobsOptions
 	): [Job]
 

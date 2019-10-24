@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import { JobbaContext, Status } from '../lib';
+import { Job, JobbaContext, Status } from '../lib';
 import { combineResolvers } from 'graphql-resolvers';
 
 // Add task to the context based on the taskId argument.
@@ -11,7 +11,17 @@ function taskResolver(parent, { taskId }: any, ctx: JobbaContext) {
 }
 
 async function findJobs(ctx: JobbaContext, statuses: Array<Status>, options: JobsQueryOptions = {}) {
-	let jobs = await ctx.task.getJobs(statuses);
+	let jobs: Array<Job>;
+
+	if (ctx.task) {
+		jobs = await ctx.task.getJobs(statuses);
+	} else {
+		jobs = [];
+		for (const [ , task ] of ctx.jobba.tasks) {
+			const taskJobs = await task.getJobs(statuses);
+			jobs.push(...taskJobs);
+		}
+	}
 
 	// sort
 	jobs = _.sortBy(jobs, 'id');
@@ -75,28 +85,6 @@ export default {
 			taskResolver,
 			(parent, args: any, ctx: JobbaContext) => {
 				return findJobs(ctx, args.statuses, args.options);
-			}
-		),
-
-		jobsByStatus: combineResolvers(
-			taskResolver,
-			async (parent, { status, taskId }: any, ctx: JobbaContext) => {
-				const results = [];
-
-				for (const [ , task ] of ctx.jobba.tasks) {
-					if (taskId && task.id !== taskId) continue;
-
-					const jobs = await task.getJobsOfStatus(status);
-					for (const job of jobs) {
-						job.extra = {};
-						const bullJob: any = job.bullJob;
-						if (bullJob.opts && bullJob.opts.repeat) job.extra.cron = bullJob.opts.repeat.cron;
-						if (bullJob.delay) job.extra.next = new Date(bullJob.timestamp + bullJob.delay);
-						results.push(job);
-					}
-				}
-
-				return results;
 			}
 		),
 

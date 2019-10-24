@@ -18,7 +18,12 @@ async function findJobs(ctx: JobbaContext, statuses: Array<Status>, options: Job
 	} else {
 		jobs = [];
 		for (const [ , task ] of ctx.jobba.tasks) {
-			const taskJobs = await task.getJobs(statuses);
+			let taskJobs: Array<Job>;
+			if (statuses.length === 1) {
+				taskJobs = await task.getJobsOfStatus(statuses[0]);
+			} else {
+				taskJobs = await task.getJobs(statuses);
+			}
 			jobs.push(...taskJobs);
 		}
 	}

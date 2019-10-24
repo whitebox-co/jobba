@@ -3,8 +3,11 @@ import { JobbaContext, Status } from '../lib';
 import { combineResolvers } from 'graphql-resolvers';
 
 // Add task to the context based on the taskId argument.
-function taskResolver (parent, { taskId }: any, ctx: JobbaContext) {
-	if (taskId) ctx.task = ctx.jobba.getTask(taskId);
+function taskResolver(parent, { taskId }: any, ctx: JobbaContext) {
+	if (taskId) {
+		ctx.task = ctx.jobba.getTask(taskId);
+		if (!ctx.task) throw new Error(`Task not found: ${taskId}`);
+	}
 }
 
 async function findJobs(ctx: JobbaContext, statuses: Array<Status>, options: JobsQueryOptions = {}) {

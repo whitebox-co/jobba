@@ -57,7 +57,11 @@ export default {
 				let jobs: Array<Job>;
 
 				if (ctx.task) {
-					jobs = await ctx.task.getJobs(statuses);
+					if (statuses.length === 1) {
+						jobs = await ctx.task.getJobsOfStatus(statuses[0]);
+					} else {
+						jobs = await ctx.task.getJobs(statuses);
+					}
 				} else {
 					jobs = [];
 					for (const [ , task ] of ctx.jobba.tasks) {

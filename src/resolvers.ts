@@ -3,9 +3,38 @@ import { JobbaContext, Status } from '../lib';
 import { combineResolvers } from 'graphql-resolvers';
 
 // Add task to the context based on the taskId argument.
-const taskResolver = (parent, { taskId }: any, ctx: JobbaContext) => {
+function taskResolver (parent, { taskId }: any, ctx: JobbaContext) {
 	if (taskId) ctx.task = ctx.jobba.getTask(taskId);
-};
+}
+
+async function findJobs(ctx: JobbaContext, statuses: Array<Status>, options: JobsQueryOptions = {}) {
+	let jobs = await ctx.task.getJobs(statuses);
+
+	// sort
+	jobs = _.sortBy(jobs, 'id');
+	if (options.sort === 'descending') jobs.reverse();
+
+	// limit
+	jobs = jobs.slice(0, options.limit);
+
+	// filter
+	if (options.filter) jobs = _.filter(jobs, options.filter);
+
+	for (const job of jobs) {
+		// annotate jobs with extra data
+		// TODO: figure out a better way. I don't like this whole `extra` thing.
+		job.extra = {};
+		const bullJob: any = job.bullJob;
+		if (bullJob.opts && bullJob.opts.repeat) job.extra.cron = bullJob.opts.repeat.cron;
+		if (bullJob.delay) job.extra.next = new Date(bullJob.timestamp + bullJob.delay);
+
+		// annotate jobs with current status
+		// TODO: only fill status if `status` field requested
+		await job.fillStatus();
+	}
+
+	return jobs;
+}
 
 interface JobsQueryOptions {
 	statuses?: Array<Status>;
@@ -41,27 +70,8 @@ export default {
 
 		jobs: combineResolvers(
 			taskResolver,
-			async (parent, args: any, ctx: JobbaContext) => {
-				const options: JobsQueryOptions = args.options || {};
-				let results = await ctx.task.getJobs(options.statuses);
-
-				// sort
-				results = _.sortBy(results, 'id');
-				if (options.sort === 'descending') results.reverse();
-
-				// limit
-				results = results.slice(0, options.limit);
-
-				// filter
-				if (options.filter) results = _.filter(results, options.filter);
-
-				// annotate jobs with current status
-				// TODO: only fill status if `status` field requested
-				for (const result of results) {
-					await result.fillStatus();
-				}
-
-				return results;
+			(parent, args: any, ctx: JobbaContext) => {
+				return findJobs(ctx, args.statuses, args.options);
 			}
 		),
 

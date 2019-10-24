@@ -24,6 +24,7 @@ type Query {
 	"Get a list of jobs for a given task."
 	jobs(
 		taskId: String!
+		statuses: [Status]
 		options: JobsOptions
 	): [Job]
 
@@ -31,6 +32,7 @@ type Query {
 	jobsByStatus(
 		status: Status!
 		taskId: String
+		options: JobsOptions
 	): [Job]
 
 	"Get a specific job."
@@ -180,7 +182,6 @@ enum Sort {
 }
 
 input JobsOptions {
-	statuses: [Status]
 	begin: Int
 	end: Int
 

@@ -97,7 +97,7 @@ export class Job {
 		return toPromise(this.bullJob.update(this.data));
 	}
 
-	public async logger(level: LogLevel, ...values) {
+	public async logger(level: LogLevel, ...values: Array<any>) {
 		const log: Log = {
 			level,
 			time: new Date(),
@@ -113,13 +113,13 @@ export class Job {
 		await this.save();
 	}
 
-	public debug(...values) { return this.logger('debug', ...values); }
-	public error(...values) { return this.logger('error', ...values); }
-	public info(...values) { return this.logger('info', ...values); }
-	public log(...values) { return this.logger('log', ...values); }
-	public warn(...values) { return this.logger('warn', ...values); }
+	public debug(...values: Array<any>) { return this.logger('debug', ...values); }
+	public error(...values: Array<any>) { return this.logger('error', ...values); }
+	public info(...values: Array<any>) { return this.logger('info', ...values); }
+	public log(...values: Array<any>) { return this.logger('log', ...values); }
+	public warn(...values: Array<any>) { return this.logger('warn', ...values); }
 
-	public async throw(ex) {
+	public async throw(ex: Error | string) {
 		await this.error(ex);
 		throw ex;
 	}

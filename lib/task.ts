@@ -48,7 +48,7 @@ export class Task implements TaskParams {
 		return this.queue;
 	}
 
-	public async getJob(jobId): Promise<Job> {
+	public async getJob(jobId: string): Promise<Job> {
 		const bullJob = await toPromise(this.queue.getJob(jobId));
 		return new this.Job(this, bullJob);
 	}
@@ -60,7 +60,7 @@ export class Task implements TaskParams {
 		asc?: boolean
 	): Promise<Array<Job>> {
 		const bullJobs = await toPromise((this.queue as any).getJobs(statuses, start, end, asc));
-		return bullJobs.map((bullJob) => new this.Job(this, bullJob));
+		return bullJobs.map((bullJob: Bull.Job) => new this.Job(this, bullJob));
 	}
 
 	public async getJobsOfStatus(status: Status): Promise<Array<Job>> {

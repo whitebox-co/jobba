@@ -10,50 +10,6 @@ function taskResolver(parent, { taskId }: any, ctx: JobbaContext) {
 	}
 }
 
-async function findJobs(ctx: JobbaContext, statuses: Array<Status>, options: JobsQueryOptions = {}) {
-	let jobs: Array<Job>;
-
-	if (ctx.task) {
-		jobs = await ctx.task.getJobs(statuses);
-	} else {
-		jobs = [];
-		for (const [ , task ] of ctx.jobba.tasks) {
-			let taskJobs: Array<Job>;
-			if (statuses.length === 1) {
-				taskJobs = await task.getJobsOfStatus(statuses[0]);
-			} else {
-				taskJobs = await task.getJobs(statuses);
-			}
-			jobs.push(...taskJobs);
-		}
-	}
-
-	// sort
-	jobs = _.sortBy(jobs, 'id');
-	if (options.sort === 'descending') jobs.reverse();
-
-	// limit
-	jobs = jobs.slice(0, options.limit);
-
-	// filter
-	if (options.filter) jobs = _.filter(jobs, options.filter);
-
-	for (const job of jobs) {
-		// annotate jobs with extra data
-		// TODO: figure out a better way. I don't like this whole `extra` thing.
-		job.extra = {};
-		const bullJob: any = job.bullJob;
-		if (bullJob.opts && bullJob.opts.repeat) job.extra.cron = bullJob.opts.repeat.cron;
-		if (bullJob.delay) job.extra.next = new Date(bullJob.timestamp + bullJob.delay);
-
-		// annotate jobs with current status
-		// TODO: only fill status if `status` field requested
-		await job.fillStatus();
-	}
-
-	return jobs;
-}
-
 interface JobsQueryOptions {
 	statuses?: Array<Status>;
 	begin?: number;
@@ -75,9 +31,12 @@ export default {
 			return ctx.jobba.tasks.values();
 		},
 
-		task: (parent, { taskId }: any, ctx: JobbaContext) => {
-			return ctx.jobba.getTask(taskId);
-		},
+		task: combineResolvers(
+			taskResolver,
+			(parent, args: any, ctx: JobbaContext) => {
+				return ctx.task;
+			}
+		),
 
 		count: combineResolvers(
 			taskResolver,
@@ -88,8 +47,51 @@ export default {
 
 		jobs: combineResolvers(
 			taskResolver,
-			(parent, args: any, ctx: JobbaContext) => {
-				return findJobs(ctx, args.statuses, args.options);
+			async (parent, args: any, ctx: JobbaContext) => {
+				const options: JobsQueryOptions = args.options;
+				const statuses: Array<Status> = args.statuses || [];
+
+				let jobs: Array<Job>;
+
+				if (ctx.task) {
+					jobs = await ctx.task.getJobs(statuses);
+				} else {
+					jobs = [];
+					for (const [ , task ] of ctx.jobba.tasks) {
+						let taskJobs: Array<Job>;
+						if (statuses.length === 1) {
+							taskJobs = await task.getJobsOfStatus(statuses[0]);
+						} else {
+							taskJobs = await task.getJobs(statuses);
+						}
+						jobs.push(...taskJobs);
+					}
+				}
+
+				// sort
+				jobs = _.sortBy(jobs, 'id');
+				if (options.sort === 'descending') jobs.reverse();
+
+				// limit
+				jobs = jobs.slice(0, options.limit);
+
+				// filter
+				if (options.filter) jobs = _.filter(jobs, options.filter);
+
+				for (const job of jobs) {
+					// annotate jobs with extra data
+					// TODO: figure out a better way. I don't like this whole `extra` thing.
+					job.extra = {};
+					const bullJob: any = job.bullJob;
+					if (bullJob.opts && bullJob.opts.repeat) job.extra.cron = bullJob.opts.repeat.cron;
+					if (bullJob.delay) job.extra.next = new Date(bullJob.timestamp + bullJob.delay);
+
+					// annotate jobs with current status
+					// TODO: only fill status if `status` field requested
+					await job.fillStatus();
+				}
+
+				return jobs;
 			}
 		),
 

@@ -47,9 +47,12 @@ export default {
 
 		jobs: combineResolvers(
 			taskResolver,
-			async (parent, args: any, ctx: JobbaContext) => {
+			async (parent, args: any, ctx: JobbaContext, info) => {
 				const options: JobsQueryOptions = args.options;
 				const statuses: Array<Status> = args.statuses || [];
+
+				const fieldNodes = info.fieldNodes[0].selectionSet.selections;
+				const needStatus = fieldNodes.some(({ name }: any) => name.value === 'status');
 
 				let jobs: Array<Job>;
 
@@ -87,8 +90,7 @@ export default {
 					if (bullJob.delay) job.extra.next = new Date(bullJob.timestamp + bullJob.delay);
 
 					// annotate jobs with current status
-					// TODO: only fill status if `status` field requested
-					await job.fillStatus();
+					if (needStatus) await job.fillStatus();
 				}
 
 				return jobs;

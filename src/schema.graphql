@@ -27,8 +27,8 @@ type Query {
 		options: JobsOptions
 	): [Job]
 
-	"Get a list of jobs matching a given type."
-	jobsByType(
+	"Get a list of jobs across all tasks matching a given status."
+	jobsByStatus(
 		status: Status!
 		taskId: String
 	): [Job]

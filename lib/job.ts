@@ -26,7 +26,7 @@ function errorToJson() {
 }
 
 export class Job {
-	public static serializedKeys = [ 'id', 'taskId', 'status', 'params', 'data', 'job' ];
+	public static serializedKeys = [ 'id', 'taskId', 'status', 'params', 'data', 'bullJob' ];
 
 	public static isJobData(value: any) {
 		return typeof value.name === 'string'
@@ -55,11 +55,11 @@ export class Job {
 		history: Array<any>;
 	};
 
-	// TODO: Rename @job => @bullJob
-	constructor(public task: Task, public job: Bull.Job) {
-		this.id = job.id;
+	constructor(public task: Task, public bullJob: Bull.Job) {
+		this.id = bullJob.id;
 		this.taskId = task.id;
-		this.params = job.data;
+		this.params = bullJob.data;
+		this.jobba = task.jobba;
 
 		this.data = {
 			name: moment().format('llll'),
@@ -94,7 +94,7 @@ export class Job {
 	public save(value?: any) {
 		if (arguments.length) this.state = value;
 		this.data.state = this.state;
-		return toPromise(this.job.update(this.data));
+		return toPromise(this.bullJob.update(this.data));
 	}
 
 	public async logger(level: LogLevel, ...values) {
@@ -107,7 +107,7 @@ export class Job {
 			})
 		};
 		const levelText = formats[log.level](`[${log.level.toUpperCase()}]`);
-		const hash = chalk.bold(`${this.task.id}:${this.job.id}`);
+		const hash = chalk.bold(`${this.task.id}:${this.bullJob.id}`);
 		console[log.level](levelText, hash, ...log.values);
 		this.data.logs.push(log);
 		await this.save();
@@ -129,18 +129,17 @@ export class Job {
 	}
 
 	// Proxies
-	public getStatus() { return toPromise(this.job.getState()); }
-	protected progress(value: number) { return toPromise(this.job.progress(value)); }
-	protected remove() { return toPromise(this.job.remove()); }
-	protected retry() { return toPromise(this.job.retry()); }
-	protected discard() { return toPromise((this.job as any).discard()); }
-	protected promote() { return toPromise(this.job.promote()); }
-	protected finished() { return toPromise(this.job.finished()); }
+	public getStatus() { return toPromise(this.bullJob.getState()); }
+	protected progress(value: number) { return toPromise(this.bullJob.progress(value)); }
+	protected remove() { return toPromise(this.bullJob.remove()); }
+	protected retry() { return toPromise(this.bullJob.retry()); }
+	protected discard() { return toPromise((this.bullJob as any).discard()); }
+	protected promote() { return toPromise(this.bullJob.promote()); }
+	protected finished() { return toPromise(this.bullJob.finished()); }
 
 	protected toJSON() {
 		const result = {};
 		for (const key of Job.serializedKeys) {
-			if (key === 'task') continue;
 			result[key] = this[key];
 		}
 		return result;

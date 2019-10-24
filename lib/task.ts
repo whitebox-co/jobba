@@ -32,8 +32,7 @@ export class Task implements TaskParams {
 		this.queue = new Bull(this.id, params.options);
 		this.queue.process(async (bullJob: Bull.Job) => {
 			const job = new this.Job(this, bullJob);
-			job.jobba = this.jobba;
-			let result;
+			let result: any;
 			try {
 				await job.save();
 				await job.init();

@@ -65,7 +65,7 @@ export default {
 			}
 		),
 
-		jobsByType: combineResolvers(
+		jobsByStatus: combineResolvers(
 			taskResolver,
 			async (parent, { status, taskId }: any, ctx: JobbaContext) => {
 				const results = [];
@@ -76,7 +76,7 @@ export default {
 					const jobs = await task.getJobsOfStatus(status);
 					for (const job of jobs) {
 						job.extra = {};
-						const bullJob: any = job.job;
+						const bullJob: any = job.bullJob;
 						if (bullJob.opts && bullJob.opts.repeat) job.extra.cron = bullJob.opts.repeat.cron;
 						if (bullJob.delay) job.extra.next = new Date(bullJob.timestamp + bullJob.delay);
 						results.push(job);

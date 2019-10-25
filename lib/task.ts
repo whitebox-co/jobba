@@ -60,13 +60,13 @@ export class Task implements TaskParams {
 		asc?: boolean
 	): Promise<Array<Job>> {
 		const bullJobs = await toPromise((this.queue as any).getJobs(statuses, start, end, asc));
-		return bullJobs.map((bullJob: Bull.Job) => new this.Job(this, bullJob));
+		return bullJobs.filter(Boolean).map((bullJob: Bull.Job) => new this.Job(this, bullJob));
 	}
 
 	public async getJobsOfStatus(status: Status): Promise<Array<Job>> {
 		const method = `get${status.charAt(0).toUpperCase()}${status.slice(1)}`;
 		const bullJobs = await toPromise(this.queue[method]());
-		return bullJobs.map((bullJob: any) => new this.Job(this, bullJob));
+		return bullJobs.filter(Boolean).map((bullJob: any) => new this.Job(this, bullJob));
 	}
 
 	public async schedule(params?: object, options?: Bull.JobOptions) {

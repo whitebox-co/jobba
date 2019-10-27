@@ -5,6 +5,7 @@
 		"module": "commonjs",
 		"outDir": "dist",
 		"pretty": true,
+		"sourceMap": true,
 		"target": "es2017"
 	},
 	"include": [

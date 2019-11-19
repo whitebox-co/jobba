@@ -10,11 +10,13 @@ function taskResolver(parent, { taskId }: any, ctx: JobbaContext) {
 	}
 }
 
+type Sort = 'ascending' | 'descending';
+
 interface JobsQueryOptions {
 	statuses?: Array<Status>;
 	begin?: number;
 	end?: number;
-	sort?: string;
+	sort?: Sort;
 	limit?: number;
 	filter?: any;
 }

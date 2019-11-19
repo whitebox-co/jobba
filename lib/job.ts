@@ -62,7 +62,7 @@ export class Job {
 		this.jobba = task.jobba;
 
 		this.data = {
-			name: moment().format('llll'),
+			name: moment(bullJob.timestamp).format('llll'),
 			params: null,
 			state: undefined,
 			logs: [],

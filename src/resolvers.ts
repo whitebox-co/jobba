@@ -80,10 +80,6 @@ export default {
 					}
 				}
 
-				// sort
-				jobs = _.sortBy(jobs, options.sortBy);
-				if (options.sortDirection === 'descending') jobs.reverse();
-
 				// filter
 				if (options.filter) jobs = _.filter(jobs, options.filter);
 
@@ -101,6 +97,10 @@ export default {
 					// annotate jobs with current status
 					if (needStatus) await job.fillStatus();
 				}
+
+				// sort
+				jobs = _.sortBy(jobs, options.sortBy);
+				if (options.sortDirection === 'descending') jobs.reverse();
 
 				return jobs;
 			}

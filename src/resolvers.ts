@@ -84,11 +84,11 @@ export default {
 				jobs = _.sortBy(jobs, options.sortBy);
 				if (options.sortDirection === 'descending') jobs.reverse();
 
-				// limit
-				jobs = jobs.slice(0, options.limit);
-
 				// filter
 				if (options.filter) jobs = _.filter(jobs, options.filter);
+
+				// limit
+				jobs = jobs.slice(0, options.limit);
 
 				for (const job of jobs) {
 					// annotate jobs with extra data

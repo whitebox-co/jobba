@@ -184,18 +184,18 @@ input JobsOptions {
 	end: Int
 
 	"""
+	Field to sort the results by.
+
+	Defaults to `data.createdOn`.
+	"""
+	sortBy: String
+
+	"""
 	The sorting direction of the results.
 
 	Defaults to `ascending`.
 	"""
 	sortDirection: SortDirection
-
-	"""
-	Field to sort the results by.
-
-	Defaults to `data.createdOn`.
-	"""
-	sortField: String
 
 	"""
 	Limit the number of results.

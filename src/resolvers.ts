@@ -16,8 +16,8 @@ interface JobsQueryOptions {
 	statuses?: Array<Status>;
 	begin?: number;
 	end?: number;
+	sortBy?: string;
 	sortDirection?: SortDirection;
-	sortField?: string;
 	limit?: number;
 	filter?: any;
 }
@@ -52,7 +52,7 @@ export default {
 			taskResolver,
 			async (parent, args: any, ctx: JobbaContext, info) => {
 				const options: JobsQueryOptions = Object.assign({
-					sortField: 'data.createdOn'
+					sortBy: 'data.createdOn'
 				}, args.options);
 				const statuses: Array<Status> = args.statuses || [];
 
@@ -81,7 +81,7 @@ export default {
 				}
 
 				// sort
-				jobs = _.sortBy(jobs, options.sortField);
+				jobs = _.sortBy(jobs, options.sortBy);
 				if (options.sortDirection === 'descending') jobs.reverse();
 
 				// limit

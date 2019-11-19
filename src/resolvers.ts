@@ -78,7 +78,7 @@ export default {
 				}
 
 				// sort
-				jobs = _.sortBy(jobs, 'id');
+				jobs = _.sortBy(jobs, 'data.createdOn');
 				if (options.sort === 'descending') jobs.reverse();
 
 				// limit

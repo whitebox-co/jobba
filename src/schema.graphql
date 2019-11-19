@@ -174,7 +174,7 @@ enum Status {
 	waiting
 }
 
-enum Sort {
+enum SortDirection {
 	ascending
 	descending
 }
@@ -186,9 +186,16 @@ input JobsOptions {
 	"""
 	The sorting direction of the results.
 
-	Defaults to ascending.
+	Defaults to `ascending`.
 	"""
-	sort: Sort
+	sortDirection: SortDirection
+
+	"""
+	Field to sort the results by.
+
+	Defaults to `data.createdOn`.
+	"""
+	sortField: String
 
 	"""
 	Limit the number of results.

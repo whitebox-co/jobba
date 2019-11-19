@@ -10,13 +10,14 @@ function taskResolver(parent, { taskId }: any, ctx: JobbaContext) {
 	}
 }
 
-type Sort = 'ascending' | 'descending';
+type SortDirection = 'ascending' | 'descending';
 
 interface JobsQueryOptions {
 	statuses?: Array<Status>;
 	begin?: number;
 	end?: number;
-	sort?: Sort;
+	sortDirection?: SortDirection;
+	sortField?: string;
 	limit?: number;
 	filter?: any;
 }
@@ -50,7 +51,9 @@ export default {
 		jobs: combineResolvers(
 			taskResolver,
 			async (parent, args: any, ctx: JobbaContext, info) => {
-				const options: JobsQueryOptions = args.options;
+				const options: JobsQueryOptions = Object.assign({
+					sortField: 'data.createdOn'
+				}, args.options);
 				const statuses: Array<Status> = args.statuses || [];
 
 				const fieldNodes = info.fieldNodes[0].selectionSet.selections;
@@ -78,8 +81,8 @@ export default {
 				}
 
 				// sort
-				jobs = _.sortBy(jobs, 'data.createdOn');
-				if (options.sort === 'descending') jobs.reverse();
+				jobs = _.sortBy(jobs, options.sortField);
+				if (options.sortDirection === 'descending') jobs.reverse();
 
 				// limit
 				jobs = jobs.slice(0, options.limit);

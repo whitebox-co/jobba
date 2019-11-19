@@ -49,6 +49,7 @@ export class Job {
 
 	protected data: {
 		name: string;
+		createdOn: Date;
 		params: any;
 		state: any;
 		logs: Array<Log>;
@@ -63,6 +64,7 @@ export class Job {
 
 		this.data = {
 			name: moment(bullJob.timestamp).format('llll'),
+			createdOn: new Date(bullJob.timestamp),
 			params: null,
 			state: undefined,
 			logs: [],

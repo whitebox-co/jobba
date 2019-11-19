@@ -141,6 +141,7 @@ type ExtraJobData {
 
 type JobData {
 	name: String
+	createdOn: Date
 	params: JSONObject
 	state: JSONObject
 	logs: [Log]

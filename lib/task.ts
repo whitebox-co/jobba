@@ -11,6 +11,7 @@ export interface TaskParams {
 	Job: typeof Job;
 	name?: string;
 	description?: string;
+	concurrency?: number;
 	options?: Bull.QueueOptions;
 }
 
@@ -30,7 +31,7 @@ export class Task implements TaskParams {
 		this.Job = params.Job || Job;
 
 		this.queue = new Bull(this.id, params.options);
-		this.queue.process(async (bullJob: Bull.Job) => {
+		this.queue.process(params.concurrency || 1, async (bullJob: Bull.Job) => {
 			const job = new this.Job(this, bullJob);
 			let result: any;
 			try {

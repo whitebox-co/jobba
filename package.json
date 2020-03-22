@@ -22,25 +22,25 @@
   "author": "Ross Hadden",
   "license": "ISC",
   "dependencies": {
-    "apollo-server": "^2.9.7",
-    "bull": "^3.11.0",
+    "apollo-server": "^2.11.0",
+    "bull": "^3.13.0",
     "chalk": "^2.4.2",
-    "graphql": "^14.5.8",
+    "graphql": "^14.6.0",
     "graphql-import": "^0.7.1",
     "graphql-resolvers": "^0.3.3",
-    "graphql-type-json": "^0.3.0",
+    "graphql-type-json": "^0.3.1",
     "lodash": "^4.17.15",
     "moment": "^2.24.0"
   },
   "devDependencies": {
-    "@types/bull": "^3.10.3",
+    "@types/bull": "^3.12.1",
     "@types/graphql-resolvers": "^0.2.2",
     "@types/graphql-type-json": "^0.3.2",
-    "@types/lodash": "^4.14.138",
+    "@types/lodash": "^4.14.149",
     "@types/moment": "^2.13.0",
-    "@types/node": "^10.14.18",
-    "tslint": "^5.20.0",
-    "typescript": "^3.6.3"
+    "@types/node": "^10.17.17",
+    "tslint": "^5.20.1",
+    "typescript": "^3.8.3"
   },
   "files": [
     "/*.json",

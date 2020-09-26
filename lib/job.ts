@@ -110,7 +110,11 @@ export class Job {
 		};
 		const levelText = formats[log.level](`[${log.level.toUpperCase()}]`);
 		const hash = chalk.bold(`${this.task.id}:${this.bullJob.id}`);
-		console[log.level](levelText, hash, ...log.values);
+		if (this.jobba.config?.logFormat === 'console') {
+			console[log.level](levelText, hash, ...log.values);
+		} else if (this.jobba.config?.logFormat === 'json') {
+			console[log.level]({ levelText, hash, values: log.values });
+		}
 		this.data.logs.push(log);
 		await this.save();
 	}

@@ -13,6 +13,7 @@ export interface JobbaConfig {
 	port?: number;
 	playground?: boolean;
 	introspection?: boolean;
+	logFormat?: string;
 }
 
 export interface JobbaContext extends Context {
@@ -27,12 +28,13 @@ export class Jobba {
 		port: 4000,
 		playground: true,
 		introspection: true,
+		logFormat: 'console'
 	};
 
 	public server: ApolloServer;
 	public tasks: Map<string, Task>;
 
-	private config: JobbaConfig;
+	public config: JobbaConfig;
 
 	constructor(config: JobbaConfig, ...registrars: Array<Registrar<Jobba>>) {
 		this.config = _.defaultsDeep(config, Jobba.defaultConfig);

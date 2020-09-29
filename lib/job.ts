@@ -113,7 +113,7 @@ export class Job {
 		if (this.jobba.config?.logFormat === 'console') {
 			console[log.level](levelText, hash, ...log.values);
 		} else if (this.jobba.config?.logFormat === 'json') {
-			console[log.level]({ levelText, hash, values: log.values });
+			console[log.level](JSON.stringify({ levelText, hash, values: log.values }));
 		}
 		this.data.logs.push(log);
 		await this.save();

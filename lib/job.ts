@@ -113,10 +113,15 @@ export class Job {
 		if (this.jobba.config?.logFormat === 'console') {
 			console[log.level](levelText, hash, ...log.values);
 		} else if (this.jobba.config?.logFormat === 'json') {
-			console[log.level](JSON.stringify({ levelText, hash, values: log.values }));
+			this.serializeMsg(log.level, { levelText, hash, values: log.values });
 		}
 		this.data.logs.push(log);
 		await this.save();
+	}
+
+	public serializeMsg(level: string, data: Object) {
+		const json = JSON.stringify(data);
+		console[level](json);
 	}
 
 	public debug(...values: Array<any>) { return this.logger('debug', ...values); }

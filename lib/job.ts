@@ -40,6 +40,7 @@ export class Job {
 	public params: any;
 	public state: any;
 	public status: any;
+	public loggerHook: Function;
 
 	// TODO: I don't like how `extra` is handled. Remove or migrate props to job root.
 	public extra: any;
@@ -61,6 +62,7 @@ export class Job {
 		this.taskId = task.id;
 		this.params = bullJob.data;
 		this.jobba = task.jobba;
+		this.loggerHook = task.loggerHook || this.defaultLoggerHook;
 
 		this.data = {
 			name: moment(bullJob.timestamp).format('llll'),
@@ -87,6 +89,15 @@ export class Job {
 		this.data.params = _.cloneDeep(this.params);
 	}
 
+	private defaultLoggerHook(log: Log, hash) {
+		if (this.jobba.config?.logFormat === 'console') {
+			const levelText = formats[log.level](`[${log.level.toUpperCase()}]`);
+			console[log.level](levelText, chalk.bold(hash), ...log.values);
+		} else if (this.jobba.config?.logFormat === 'json') {
+			this.serializeMsg(log.level, { level: log.level.toUpperCase(), hash, values: log.values });
+		}
+	}
+
 	public init(): any {}
 
 	public process(): any {
@@ -108,13 +119,10 @@ export class Job {
 				return value;
 			})
 		};
-		const levelText = formats[log.level](`[${log.level.toUpperCase()}]`);
-		const hash = chalk.bold(`${this.task.id}:${this.bullJob.id}`);
-		if (this.jobba.config?.logFormat === 'console') {
-			console[log.level](levelText, hash, ...log.values);
-		} else if (this.jobba.config?.logFormat === 'json') {
-			this.serializeMsg(log.level, { levelText, hash, values: log.values });
-		}
+		const hash = `${this.task.id}:${this.bullJob.id}`;
+
+		this.loggerHook.bind(this)(log, hash);
+
 		this.data.logs.push(log);
 		await this.save();
 	}

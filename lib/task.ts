@@ -13,6 +13,7 @@ export interface TaskParams {
 	description?: string;
 	concurrency?: number;
 	options?: Bull.QueueOptions;
+	loggerHook?: Function;
 }
 
 export class Task implements TaskParams {
@@ -21,6 +22,7 @@ export class Task implements TaskParams {
 	public name: string;
 	public description: string;
 	public jobba: Jobba;
+	public loggerHook: Function;
 
 	private queue: Bull.Queue;
 
@@ -29,6 +31,7 @@ export class Task implements TaskParams {
 		this.name = params.name || _.capitalize(_.words(this.id).join(' '));
 		this.description = params.description;
 		this.Job = params.Job || Job;
+		this.loggerHook = params.loggerHook;
 
 		this.queue = new Bull(this.id, params.options);
 		this.queue.process(params.concurrency || 1, async (bullJob: Bull.Job) => {

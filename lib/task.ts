@@ -10,6 +10,8 @@ export interface TaskParams {
 	id: string;
 	Job: typeof Job;
 	name?: string;
+	processorPath?: string; // for multiprocess mode
+	multiprocess?: boolean;
 	description?: string;
 	concurrency?: number;
 	options?: Bull.QueueOptions;
@@ -34,7 +36,11 @@ export class Task implements TaskParams {
 		this.loggerHook = params.loggerHook;
 
 		this.queue = new Bull(this.id, params.options);
-		this.queue.process(params.concurrency || 1, async (bullJob: Bull.Job) => {
+
+		if (params.multiprocess) {
+			this.queue.process(params.concurrency || 1, params.processorPath);
+		} else {
+			this.queue.process(params.concurrency || 1, async (bullJob: Bull.Job) => {
 			const job = new this.Job(this, bullJob);
 			let result: any;
 			try {

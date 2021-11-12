@@ -41,17 +41,19 @@ export class Task implements TaskParams {
 			this.queue.process(params.concurrency || 1, params.processorPath);
 		} else {
 			this.queue.process(params.concurrency || 1, async (bullJob: Bull.Job) => {
-			const job = new this.Job(this, bullJob);
-			let result: any;
-			try {
-				await job.save();
-				await job.init();
-				result = await job.process();
-			} catch (ex) {
-				await job.throw(ex);
-			}
-			return result;
-		});
+				const job = new this.Job(this, bullJob);
+				let result: any;
+				try {
+					await job.save();
+					await job.init();
+					result = await job.process();
+					await job.onProcessCompleted();
+				} catch (ex) {
+					await job.throw(ex);
+				}
+				return result;
+			});
+		}
 	}
 
 	public getQueue(): Bull.Queue {

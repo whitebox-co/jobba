@@ -98,11 +98,23 @@ export class Job {
 		}
 	}
 
-	public init(): any {}
+	/**
+	 * Invoked before `process` is invoked.
+	 * @async
+	 * @return {Promise<any>}
+	 */
+	public async init(): Promise<any> {}
 
-	public process(): any {
+	public async process(): Promise<any> {
 		return this.throw('Job must implement method: process');
 	}
+
+	/**
+	 * Invoked after `process` has completed without error.
+	 * @async
+	 * @return {Promise<any>}
+	 */
+	public async onProcessCompleted(): Promise<any> {}
 
 	public save(value?: any) {
 		if (arguments.length) this.state = value;

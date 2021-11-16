@@ -132,6 +132,27 @@ jobba.register({
 });
 ```
 
+### Creating a Job subclass
+
+```typescript
+export class MyCustomJob extends Job {
+
+	public async init(): Promise<any> {
+		// Code here executed before the job's `process` function is invoked. 
+	}
+
+	public async process(): Promise<any> {
+		// Do some processing work...
+	}
+
+	public async onProcessCompleted(): Promise<any> {
+		// The `process` function has completed.
+		// Can use this function for cleanup, logging, etc.
+	}
+
+}
+```
+
 ### Misc
 
 ```typescript
